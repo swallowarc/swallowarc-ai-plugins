@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin.json",
   "name": "swallowarc",
   "displayName": "Swallowarc Skills",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "swallowarc 個人用スキル集約プラグイン。必要なスキルをこのプラグインに追加していき、/swallowarc:<skill-name> で呼び出す。",
   "author": {
     "name": "mjkt"
