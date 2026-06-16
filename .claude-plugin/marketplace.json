@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "swallowarc-ai-plugins",
+  "owner": {
+    "name": "mjkt"
+  },
+  "description": "swallowarc 個人用 AI エージェント向けプラグイン配布マーケットプレイス",
+  "plugins": [
+    {
+      "name": "swallowarc",
+      "source": "./plugins/swallowarc",
+      "description": "swallowarc 個人用スキルを束ねるプラグイン。/swallowarc:<skill-name> でスキルを呼び出す。収録：book-summary-html（本の要点まとめHTML生成）、infographic-prompt（手書き風説明画像のプロンプト生成）。"
+    }
+  ]
+}

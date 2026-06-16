@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ページ見出し}} ― 要点まとめ</title>
+<link rel="stylesheet" href="style.css">
+<style>:root{ --accent:#3a5a8c; --accent-soft:#eef2f8; }</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><b>{{書名短縮}}</b> ― 要点まとめ</a>
+    <div class="nav-links">
+      <a class="home" href="index.html">目次</a>
+      <!-- 他ページへのリンク -->
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="eyebrow">{{PART/CHAPTER ラベル}}</span>
+  <h1>{{ページ見出し}}</h1>
+  <p class="lead">{{ページの導入。著者の主張の骨格。だ・である調・本に基づく}}</p>
+</header>
+
+<main>
+
+  <!-- ページ内目次（章が複数あるとき） -->
+  <nav class="toc" aria-label="この部の目次">
+    <h2>このページの章</h2>
+    <ol>
+      <li><a href="#ch1"><span class="ch-no">1</span><span>章タイトル</span></a></li>
+    </ol>
+  </nav>
+
+  <!-- ===== 章ブロック ===== -->
+  <section class="chapter" id="ch1">
+    <div class="chapter-head"><span class="num">第1章</span><h2>{{章タイトル}}</h2></div>
+
+    <!-- 章を一言で（著者の主張の核） -->
+    <div class="in-a-nutshell">
+      <span class="emoji">💡</span>
+      <div>
+        <p class="label">この章を一言で</p>
+        <p>{{著者がこの章で主張している核。だ・である調}}</p>
+      </div>
+    </div>
+
+    <!-- 要点＋解説（著者の主張1つにつき1トピックが目安） -->
+    <div class="topic">
+      <h3 class="ic"><span class="emoji">📌</span>{{要点の見出し}}</h3>
+      <p class="summary">{{要点の簡潔な解説。だ・である調}}</p>
+      <ul>
+        <li>{{支える具体。本に基づく}}</li>
+      </ul>
+      <!-- 補足が必要で本にない情報を足すときのみ↓を使う -->
+      <div class="callout supplement">
+        <span class="emoji">📎</span>
+        <div><span class="ctitle">補足（本書外）</span><p>{{本に書かれていないが誤りでない補足。本書外と分かるよう必ずこの部品で囲む}}</p></div>
+      </div>
+    </div>
+
+    <p class="kw-label">Keywords</p>
+    <div class="keywords"><span class="k">{{キーワード}}</span></div>
+  </section>
+
+  <!-- 前後ページ送り -->
+  <nav class="pager">
+    <a class="prev" href="{{前ページ}}"><span class="dir">← 前</span><span class="ttl">{{前ページ名}}</span></a>
+    <a class="next" href="{{次ページ}}"><span class="dir">次 →</span><span class="ttl">{{次ページ名}}</span></a>
+  </nav>
+
+</main>
+
+<footer class="foot"><p>{{書名}} 要点まとめ</p></footer>
+
+</body>
+</html>

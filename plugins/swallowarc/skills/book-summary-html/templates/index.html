@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{書名}} ― 要点まとめ</title>
+<link rel="stylesheet" href="style.css">
+<style>:root{ --accent:#3a5a8c; --accent-soft:#eef2f8; }</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><b>{{書名短縮}}</b> ― 要点まとめ</a>
+    <div class="nav-links">
+      <a class="home" href="index.html">目次</a>
+      <!-- 各ページへのリンク（部ごと/章ごと） -->
+      <a href="part1_xxx.html">第1部</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="eyebrow">READING NOTES</span>
+  <h1>{{書名}}</h1>
+  <p class="lead">{{この要約サイトの説明。だ・である調。本にない主張・比喩を入れない}}</p>
+</header>
+
+<main>
+
+  <!-- ===== 書誌情報（固定書式・推測で埋めない／不明は空欄か省略） ===== -->
+  <section class="bibliography">
+    <p class="title">{{書名}}{{／原題があれば原題}}</p>
+    <dl>
+      <dt>著者</dt><dd>{{著者}}</dd>
+      <dt>訳者</dt><dd>{{訳者（あれば）}}</dd>
+      <dt>出版社</dt><dd>{{出版社}}</dd>
+      <dt>発行年</dt><dd>{{発行年}}</dd>
+    </dl>
+  </section>
+
+  <!-- ===== 本の全体像（著者の主張の骨格。本に基づく） ===== -->
+  <section class="book-overview">
+    <h2>本書の全体像</h2>
+    <p>{{本書が扱う問題と著者の主張の骨格。本に基づき、だ・である調で書く}}</p>
+  </section>
+
+  <!-- ===== この本がターゲットとする読者（本の内容から推定／AIバッジ不要） ===== -->
+  <section class="book-overview">
+    <h2>この本がターゲットとする読者</h2>
+    <p>{{想定読者の概要。だ・である調}}<span style="font-size:12px;color:var(--ink-faint);">（本書の内容から推定）</span></p>
+    <div class="persona-grid">
+      <div class="persona">
+        <span class="emoji">🙂</span>
+        <h3>{{読者像}}</h3>
+        <p>{{この読者が本書から得るもの}}</p>
+      </div>
+      <!-- 読者像の数だけ繰り返す -->
+    </div>
+  </section>
+
+  <!-- ===== おすすめの読み進め方（AIによる分析・本書外。例外的に独自提案を書いてよい） ===== -->
+  <section class="ai-analysis">
+    <div class="ai-badge"><span class="emoji">🤖</span>AIによる分析 ― 本書の記述ではなく、内容に基づく独自提案</div>
+    <h2>おすすめの読み進め方</h2>
+    <p>{{全体方針。本の構成・主張と整合させる}}</p>
+    <div class="path-row">
+      <span class="who">{{立場・関心}}</span>
+      <span class="route">{{読む順序。<b>太字</b>で主要な部/章を示す}}</span>
+    </div>
+    <!-- 立場の数だけ繰り返す -->
+  </section>
+
+  <!-- ===== 各ページへのカードナビ ===== -->
+  <div class="section-label">構成 ― クリックで各ページへ</div>
+  <div class="part-grid">
+    <a class="part-card" style="--pc:#3a5a8c" href="part1_xxx.html">
+      <span class="pc-eyebrow">PART 1 ― 第◯〜◯章</span>
+      <h3>{{部/章タイトル}}</h3>
+      <p>{{この部/章の要旨。だ・である調}}</p>
+      <div class="chapters"><span>◯</span> 章タイトル ／ <span>◯</span> 章タイトル</div>
+    </a>
+    <!-- 以降、ページ数だけ繰り返す -->
+  </div>
+
+</main>
+
+<footer class="foot"><p>{{書名}} 要点まとめ</p></footer>
+
+</body>
+</html>
