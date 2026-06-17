@@ -454,6 +454,26 @@ mark {
 }
 .callout.supplement .ctitle { color: #8a6516; }
 
+/* ---- このサイトについて（固定の説明バナー・index 冒頭） ---- */
+.about-notice {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 0 0 22px;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--ink-soft);
+}
+.about-notice .emoji { font-size: 18px; flex: none; line-height: 1.6; }
+.about-notice .ctitle {
+  font-weight: 700; display: block; margin-bottom: 4px;
+  font-size: 13px; letter-spacing: .02em; color: var(--accent);
+}
+.about-notice p { margin: 0; }
+
 /* ---- 対比カード ---- */
 .versus {
   display: grid;
