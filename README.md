@@ -53,7 +53,7 @@ Claude Code の[プラグインマーケットプレイス](https://code.claude.
 
 | スキル | 呼び出し | 説明 |
 | --- | --- | --- |
-| `book-summary-html` | `/swallowarc:book-summary-html` | 本の要点をまとめた HTML サマリーサイト（書誌情報つき index ＋ 章/部ページ）を生成する。元情報は基本 Web リサーチ（WebSearch / WebFetch）で集め、PDF など本文ファイルがある場合のみ引数で渡してそれを主ソースにする。 |
+| `book-summary-html` | `/swallowarc:book-summary-html` | 本の要点をまとめた HTML サマリーサイト（書誌情報つき index ＋ 章/部ページ）を生成する。元情報は基本 Web リサーチ（WebSearch / WebFetch）で集め、PDF など本文ファイルがある場合のみ引数で渡してそれを主ソースにする。`mode=標準`（凝縮・既定）／`mode=詳細`（論拠・前提・筋道まで展開）の2モードをサポート。 |
 | `infographic-prompt` | `/swallowarc:infographic-prompt` | 概念・文書・本の要点を「手描きホワイトボード解説風の1枚絵インフォグラフィック」にするための画像生成プロンプトを作る。Nano Banana Pro（Gemini 3 Pro Image）や GPT Image 2 などの画像モデル向け。 |
 
 ## バージョン更新ルール（必須）
