@@ -14,9 +14,14 @@
 <nav class="topbar">
   <div class="topbar-inner">
     <a class="brand" href="index.html"><b>{{書名短縮}}</b> ― 要点まとめ</a>
-    <div class="nav-links">
-      <a class="home" href="index.html">目次</a>
-      <!-- 他ページへのリンク -->
+    <!-- スマホでは章リンクを折りたたむ（既定は閉じる）。チェックボックスでトグル＝JS不要 -->
+    <div class="nav">
+      <input type="checkbox" id="navtoggle" class="nav-checkbox" aria-label="ページ一覧を開閉">
+      <label for="navtoggle" class="nav-toggle">章 <span class="chev" aria-hidden="true">▾</span></label>
+      <div class="nav-links">
+        <a class="home" href="index.html">目次</a>
+        <!-- 他ページへのリンク -->
+      </div>
     </div>
   </div>
 </nav>
