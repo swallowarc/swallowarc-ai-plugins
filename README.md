@@ -14,20 +14,9 @@ Claude Code の[プラグインマーケットプレイス](https://code.claude.
 .
 ├── .claude-plugin/
 │   └── marketplace.json              # マーケットプレイス定義（配布プラグイン一覧）
-├── docs/
-│   └── kata/                         # kata の設計書・実装プラン
 └── plugins/
     ├── swallowarc/                   # 汎用スキル集約プラグイン（呼び出し名前空間 = swallowarc）
-    │   ├── .claude-plugin/
-    │   │   └── plugin.json           # プラグイン manifest（name: swallowarc）
-    │   └── skills/
-    │       └── book-summary-html/
-    │           └── SKILL.md          # スキル本体 → /swallowarc:book-summary-html
     └── kata/                         # 開発プロセス規律プラグイン（呼び出し名前空間 = kata）
-        ├── .claude-plugin/
-        │   └── plugin.json           # プラグイン manifest（name: kata）
-        └── skills/
-            └── <skill-name>/SKILL.md # スキル本体 → /kata:<skill-name>
 ```
 
 > **名前空間の注意:** スキルの呼び出し名 `/<prefix>:<skill>` の `<prefix>` は **プラグイン名（plugin.json の `name`）** で決まる。
