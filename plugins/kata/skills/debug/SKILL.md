@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes - four-phase root cause investigation
+description: バグ・テスト失敗・予期しない挙動に遭遇したとき、修正を提案する前に使う。4フェーズの根本原因調査
 ---
 
 # デバッグ（体系的根本原因調査）

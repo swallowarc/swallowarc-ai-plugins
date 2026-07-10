@@ -1,6 +1,6 @@
 ---
 name: design
-description: Use before any creative work - creating features, building components, adding functionality, or changing behavior. Explores intent, requirements and design through dialogue before implementation
+description: 創造的な作業（機能の作成・コンポーネントの構築・機能追加・挙動の変更）の前に使う。実装に入る前に、対話を通じて意図・要件・設計を掘り下げる
 ---
 
 # design（対話でアイデアを設計に育てる）

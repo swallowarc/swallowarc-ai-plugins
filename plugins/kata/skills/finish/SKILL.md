@@ -1,6 +1,6 @@
 ---
 name: finish
-description: Use when implementation is complete, verified and reviewed - presents structured options for merging, creating a PR, keeping or discarding the branch, then cleans up
+description: 実装が完了し、検証・レビューが済んだときに使う。マージ・PR 作成・ブランチの保持／破棄の選択肢を整理して提示し、後片付けまで行う
 ---
 
 # finish（実装完了後の統合方針を決める）

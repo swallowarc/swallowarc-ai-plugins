@@ -1,6 +1,6 @@
 ---
 name: execute
-description: Use when you have a written implementation plan to execute - sets up an isolated worktree, then executes tasks directly or via fresh subagents with per-task review
+description: 書かれた実装プランを実行するときに使う。隔離された worktree を用意し、タスクを直接またはフレッシュなサブエージェントで実行し、タスクごとにレビューする
 ---
 
 # execute（プランを隔離環境で実行する）

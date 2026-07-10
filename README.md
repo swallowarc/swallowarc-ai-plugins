@@ -131,7 +131,7 @@ Claude Code の[プラグインマーケットプレイス](https://code.claude.
 ## 新しいスキルの追加手順
 
 1. `plugins/<plugin-name>/skills/<skill-name>/SKILL.md` を作成する（汎用スキルは `swallowarc`、開発プロセス系は `kata`）。
-   - frontmatter に `name` と `description` を記述（`description` は三人称で "Use when ..." 始まり、トリガー条件のみを書く）。
+   - frontmatter に `name` と `description` を記述（`description` は日本語で「〜のときに使う」形式で始め、トリガー条件のみを書く）。
 2. 必要なら同ディレクトリに `references/`・`assets/`・`templates/` などの補助ファイルを置く。
 3. **README.md の「収録スキル」表を更新する**（追加したスキルを 1 行追記）。
 4. **該当プラグインの `plugin.json` の `version` を更新する**（上記「バージョン更新ルール」に従う。追加=マイナー）。

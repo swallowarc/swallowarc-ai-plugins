@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Use when you have an approved design or spec for a multi-step task, before touching code - creates an implementation plan of bite-sized, independently verifiable tasks
+description: 承認済みの設計や spec があるマルチステップのタスクで、コードに触る前に使う。小さく独立に検証可能なタスクからなる実装プランを作成する
 ---
 
 # plan（実装計画を最小タスクへ分解する）

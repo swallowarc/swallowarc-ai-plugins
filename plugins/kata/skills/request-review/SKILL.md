@@ -1,6 +1,6 @@
 ---
 name: request-review
-description: Use when completing a task or major feature, or before merging - dispatches a reviewer subagent to verify the work against spec and plan
+description: タスクや主要機能の完了時、またはマージ前に使う。レビュアーサブエージェントを dispatch し、spec とプランに照らして作業を検証させる
 ---
 
 # request-review（レビュアーサブエージェントに検証を依頼する）

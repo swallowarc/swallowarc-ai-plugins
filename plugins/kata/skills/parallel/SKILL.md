@@ -1,6 +1,6 @@
 ---
 name: parallel
-description: Use when facing 2+ independent tasks with no shared state or ordering dependency - dispatches focused subagents to work concurrently
+description: 共有状態も順序依存もない独立タスクが2つ以上あるときに使う。焦点を絞ったサブエージェントを dispatch して並行に作業させる
 ---
 
 # parallel（独立タスクの並列エージェント実行）

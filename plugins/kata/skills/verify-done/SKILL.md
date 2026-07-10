@@ -1,6 +1,6 @@
 ---
 name: verify-done
-description: Use when about to claim work is complete, fixed, or passing, before committing or reporting success - requires fresh verification evidence before any success claim
+description: 作業が「完了した」「直った」「通った」と主張しようとするとき、コミットや成功報告の前に使う。成功を主張する前に新鮮な検証の証拠を要求する
 ---
 
 # 検証してから完了を主張する

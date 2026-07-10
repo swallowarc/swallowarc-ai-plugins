@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Use when implementing any feature or bugfix, before writing implementation code - enforces RED-GREEN-REFACTOR with mandatory failure verification
+description: 機能実装やバグ修正で、実装コードを書く前に使う。失敗の確認を必須とする RED-GREEN-REFACTOR を強制する
 ---
 
 # TDD（テスト駆動開発）

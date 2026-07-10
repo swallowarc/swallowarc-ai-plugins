@@ -1,6 +1,6 @@
 ---
 name: using-kata
-description: Use when starting any conversation or task - establishes how to find and use kata skills, requiring a skill check before any response or action
+description: 会話やタスクの開始時に使う。kata スキルの見つけ方・使い方を確立し、応答や行動の前にスキル要否チェックを必須にする
 ---
 
 # using-kata（スキル要否チェックの入口）
