@@ -1,0 +1,90 @@
+---
+name: finish
+description: Use when implementation is complete, verified and reviewed - presents structured options for merging, creating a PR, keeping or discarding the branch, then cleans up
+---
+
+# finish（実装完了後の統合方針を決める）
+
+## 概要
+
+実装が終わっても、統合の仕方まで自動で決めてよいわけではない。テストが通っているかを確かめ、いまどんな作業環境にいるかを見極めたうえで、選択肢を提示してユーザーに決めてもらう。
+
+手順は次の順で進む。テスト確認 → 環境検出 → 選択肢提示 → 実行 → 後片付け。順序を入れ替えたり途中を飛ばしたりしない。
+
+## Step 1: テスト確認
+
+選択肢を出す前に、プロジェクトのテストを実行し全件通過を確かめる。判定基準は `kata:verify-done` の鉄の掟に従う——このメッセージの中で実行していないコマンドの結果を「たぶん通る」で済ませない。
+
+失敗が1件でも残っていれば、失敗内容をそのまま報告してその場で停止する。選択肢は一切提示しない。壊れたコードのままマージやPR作成に進むことは、後片付けより先に直すべき問題を先送りするだけである。
+
+## Step 2: 環境検出
+
+いまの作業場所が通常のリポジトリか、worktree か、detached HEAD かを次のコマンドで判定する。
+
+```bash
+GIT_DIR=$(cd "$(git rev-parse --git-dir)" && pwd -P)
+GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" && pwd -P)
+```
+
+`GIT_DIR` と `GIT_COMMON` が一致すれば通常リポジトリ。異なっていて名前付きブランチ上にいれば worktree。異なっていて `git symbolic-ref -q HEAD` がブランチ名を返せなければ detached HEAD である。この判定結果が Step 3 でどのメニューを出すかと、Step 5 の後片付けを行うかどうかを決める。
+
+## Step 3: 選択肢提示
+
+AskUserQuestion が使える環境ではそれで選ばせる。使えない環境では本文中に番号付きリストを出し、番号で答えてもらう。どちらの場合も説明を付け足さず、選択肢だけを簡潔に並べる。
+
+通常リポジトリと、名前付きブランチの worktree では、正確に次の4択にする。
+
+1. ベースブランチにローカルで取り込む（マージ）
+2. リモートへ push し PR を作成する
+3. ブランチを残したままにする
+4. この作業を捨てる（破棄）
+
+detached HEAD では 1（マージ）を除いた3択にする。ローカルにマージ先という概念を持たない環境だからである。さらに detached HEAD にはブランチ名が存在しないため、2番目の選択肢の文言は「新しいブランチ名を付けて push し PR を作成する」に読み替える。
+
+## Step 4: 実行
+
+選ばれた番号に応じて処理する。
+
+**(1) ローカルマージ**: まずベースブランチを特定する。`git merge-base HEAD main 2>/dev/null || git merge-base HEAD master` が何か返せば、それが分岐元であり main か master かがわかる。どちらも該当しない、あるいは複数の候補が考えられる場合は、推測せずユーザーに確認する。
+
+次に worktree 内で作業している場合は、メインリポジトリのルートへ移動してから操作する。ベースブランチは通常メイン worktree で既にチェックアウトされているため、worktree の中から `git checkout <base>` を叩くと git に拒否され必ず失敗する。
+
+```bash
+cd "$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)"
+```
+
+（最初から通常リポジトリで作業している場合はこの移動は不要。）ルートに着いたら、ベースブランチへ切り替えて最新化し、マージする。`git merge` がコンフリクト等で失敗したら、そこで停止してユーザーに報告する。解消しないまま後片付けへ進まない。マージが通ったら、続けてもう一度テストを実行し成功を確認してから、初めて Step 5 の後片付けに進む。結果を検証する前に worktree を消すと、失敗しても後戻りできなくなる。worktree の片付けが済んだら、最後に `git branch -d <feature-branch>` でブランチを削除する。`-d` を使うのは、万一マージが完了していなければ削除を拒否してくれる安全弁だからであり、破棄用の `-D`（強制削除）とは役割が異なる。
+
+**(2) push して PR 作成**: 名前付きブランチ上であれば `git push -u origin <branch>` で push する。detached HEAD の場合はブランチが存在しないため、新しいブランチ名をユーザーに確認したうえで `git push -u origin HEAD:refs/heads/<新ブランチ名>` の形で push する（detached HEAD からは宛先を省略形で補完できないため、`refs/heads/` 付きの完全修飾で指定する）。push 後は `gh pr create` で Pull Request を作る。worktree はレビュー対応で使い続ける可能性があるため、ここでは削除しない。
+
+**(3) 維持**: 何もクリーンアップせず、ブランチと worktree をそのまま残していることだけ報告する。
+
+**(4) 破棄**: 消える対象（ブランチ名・コミット一覧・worktree パス）を明示したうえで、`discard` という単語そのものの入力を求める。「はい」「OK」のような曖昧な返答は確認として受理しない。入力が揃って初めて、Step 5 の後片付けと `git branch -D` によるブランチ強制削除に進む。
+
+## Step 5: 後片付け
+
+後片付けを行うのは選択肢 (1) と (4) のときだけである。(2) と (3) は worktree を残す必要があるため、このステップ自体を実行しない。
+
+対象は「自分（kata）が今回 `.worktrees/` 配下に作成した worktree」に限る。ハーネスが用意した作業スペースや、別の経緯で存在する worktree には手を出さない。作った覚えのないパスを見つけたら、それは削除対象ではなく調査対象である。
+
+ExitWorktree のようなネイティブな終了ツールが使える環境ではそれを使う。使えない環境では、まず worktree の外（メインリポジトリのルート）へ `cd` してから remove する。
+
+```bash
+cd "$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)"
+git worktree remove <worktree-path>
+git worktree prune
+```
+
+worktree の内部にいたまま `remove` を叩くと失敗するため、`cd` の順序は省略しない。ブランチの削除は worktree の除去が終わった後に行う。逆にすると、worktree がまだ参照しているブランチを消そうとしてコマンドが失敗する。
+
+## Red Flags
+
+- テストが失敗したまま選択肢の提示や実行に進む
+- 破棄の前に `discard` という文字列そのものでの確認を取らない
+- worktree の内部にいる状態で `git worktree remove` を実行する
+- 自分が作成していない worktree を削除する
+- worktree を除去するより先にブランチを削除する
+
+## 関連スキル
+
+- Step 1 のテスト確認は `kata:verify-done` の鉄の掟に従う。

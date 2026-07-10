@@ -12,11 +12,12 @@ set -euo pipefail
 file_path=$(jq -r '.tool_input.file_path // empty')
 
 case "$file_path" in
-  */plugins/swallowarc/skills/*/SKILL.md)
-    jq -n '{
+  */plugins/*/skills/*/SKILL.md)
+    plugin_name=$(printf '%s' "$file_path" | sed -E 's#.*/plugins/([^/]+)/skills/.*#\1#')
+    jq -n --arg p "$plugin_name" '{
       hookSpecificOutput: {
         hookEventName: "PostToolUse",
-        additionalContext: "スキル(SKILL.md)を変更しました。作業完了前に必ず: 1) README.md の収録スキル表を実態に合わせて最新化する、2) plugins/swallowarc/.claude-plugin/plugin.json の version を更新する（新規スキル追加=マイナー、既存スキルの更新のみ=パッチ をインクリメント。バージョンを上げないと利用側 /plugin marketplace update に取り込まれません）。"
+        additionalContext: "スキル(SKILL.md)を変更しました。作業完了前に必ず: 1) README.md の収録スキル表を実態に合わせて最新化する、2) plugins/\($p)/.claude-plugin/plugin.json の version を更新する（新規スキル追加=マイナー、既存スキルの更新のみ=パッチ をインクリメント。バージョンを上げないと利用側 /plugin marketplace update に取り込まれません）。"
       }
     }'
     ;;

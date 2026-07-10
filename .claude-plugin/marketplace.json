@@ -10,6 +10,11 @@
       "name": "swallowarc",
       "source": "./plugins/swallowarc",
       "description": "swallowarc 個人用スキルを束ねるプラグイン。/swallowarc:<skill-name> でスキルを呼び出す。収録：book-summary-html（本の要点まとめHTML生成）、infographic-prompt（手書き風説明画像のプロンプト生成）。"
+    },
+    {
+      "name": "kata",
+      "source": "./plugins/kata",
+      "description": "開発プロセスに規律を与えるスキル集。設計（design）→プラン（plan）→実行（execute）のワークフローと、tdd・debug・verify-done 等の横断ゲートを提供する。/kata:<skill-name> で呼び出す。"
     }
   ]
 }
