@@ -1,0 +1,209 @@
+schema_version: 1
+# ported from: internal/domain/judge_aspects_*.go @ autopostd 20c740b
+# writeloop 独自の局所適応:
+#   - style_conformance: StyleGuideFor(t) の埋め込みの代わりに、同ディレクトリの
+#     style-guide.md を参照させる一文を末尾に置く。{article_type} は select_aspects が
+#     実値に置換する。
+#   - fact_opinion_separation: Go は article_type 条件で instruction 文字列を分岐するが、
+#     ここでは同一 key・article_types のみ異なる 2 エントリに分ける（news/opinion 版と
+#     intro/impl 版）。select_aspects は article_type に応じてどちらか一方のみを選ぶ。
+aspects:
+  - key: concrete_examples
+    group: practical_value
+    allow_error: true
+    article_types: [intro]
+    modes: [article]
+    requires: []
+    instruction: |-
+      具体例: 説明が抽象論に留まらず、読者が自分の環境で再現・応用できる具体例（コード、設定、手順、ユースケース）を伴っているかを評価してください。読者が「自分の場合はこう適用する」と判断できる具体性があるかが評価軸です。不足がある場合、suggestion にはどのセクションにどのような具体例を追加すべきかを具体的に書いてください。具体例が記事全体で完全に欠落している場合のみ severity=error とし、それ以外は warning としてください。
+  - key: failure_cases
+    group: practical_value
+    allow_error: false
+    article_types: [intro]
+    modes: [article]
+    requires: []
+    instruction: |-
+      失敗例・つまずきポイント: 初学者がつまずきやすいポイントや典型的な失敗例が示され、読者が事前に落とし穴を回避する判断ができるかを評価してください。不足がある場合、suggestion にはどのセクションにどのような失敗例・注意点を追加すべきかを具体的に書いてください。
+  - key: minimal_adoption
+    group: practical_value
+    allow_error: false
+    article_types: [intro]
+    modes: [article]
+    requires: []
+    instruction: |-
+      最小の導入手順: 読者が最小構成で試し始めるための導入手順（インストール、最小設定、動作確認）が示され、読者が「まず何から着手するか」を判断できるかを評価してください。不足がある場合、suggestion にはどのセクションにどのような最小手順を追加すべきかを具体的に書いてください。
+  - key: learning_path
+    group: practical_value
+    allow_error: false
+    article_types: [intro]
+    modes: [article]
+    requires: []
+    instruction: |-
+      次の学習パス: 記事を読み終えた読者が次に何を学ぶべきか（発展トピック、公式ドキュメント、関連技術）が示され、読者が学習の次の一歩を判断できるかを評価してください。不足がある場合、suggestion にはどのセクション（例: 次にやること）に何を追加すべきかを具体的に書いてください。
+  - key: alternatives_tradeoffs
+    group: practical_value
+    allow_error: true
+    article_types: [impl]
+    modes: [article]
+    requires: []
+    instruction: |-
+      選択肢とトレードオフ: 採用した技術・設計に対する代替案とトレードオフ（性能、複雑さ、運用コスト等）が説明され、読者が自分の状況でどの選択肢を採るべきかを判断できるかを評価してください。不足がある場合、suggestion にはどのセクションにどの比較観点を追加すべきかを具体的に書いてください。選択理由の説明が記事全体で完全に欠落している場合のみ severity=error とし、それ以外は warning としてください。
+  - key: when_not_to_use
+    group: practical_value
+    allow_error: false
+    article_types: [impl]
+    modes: [article]
+    requires: []
+    instruction: |-
+      採用しない条件: この手法・技術を採用すべきでない条件や向かないケースが述べられ、読者が「自分のケースでは採用を見送る」という判断ができるかを評価してください。不足がある場合、suggestion にはどのセクションにどのような非推奨条件を追加すべきかを具体的に書いてください。
+  - key: operational_notes
+    group: practical_value
+    allow_error: false
+    article_types: [impl]
+    modes: [article]
+    requires: []
+    instruction: |-
+      実運用上の注意: 本番運用時の注意点（監視、障害時の挙動、アップグレード、セキュリティ等）が述べられ、読者が運用開始前に何を準備すべきかを判断できるかを評価してください。不足がある場合、suggestion にはどのセクションにどのような運用上の注意を追加すべきかを具体的に書いてください。
+  - key: claim_clarity
+    group: practical_value
+    allow_error: true
+    article_types: [opinion]
+    modes: [article]
+    requires: []
+    instruction: |-
+      主張の明確さ: 筆者の主張が一意に特定できる明確さで述べられ、読者が「何に賛成・反対するか」を判断できるかを評価してください。不足がある場合、suggestion にはどのセクションで主張をどう明確化すべきかを具体的に書いてください。主張が記事全体で完全に欠落している（読んでも特定できない）場合のみ severity=error とし、それ以外は warning としてください。
+  - key: evidence
+    group: practical_value
+    allow_error: false
+    article_types: [opinion]
+    modes: [article]
+    requires: []
+    instruction: |-
+      根拠: 主張を支える根拠（経験、データ、事例、引用）が示され、読者が主張の信頼度を判断できるかを評価してください。不足がある場合、suggestion にはどのセクションにどのような根拠を追加すべきかを具体的に書いてください。
+  - key: counterarguments
+    group: practical_value
+    allow_error: false
+    article_types: [opinion]
+    modes: [article]
+    requires: []
+    instruction: |-
+      想定反論: 想定される反論や異なる立場への言及があり、読者が主張の適用範囲と限界を多面的に判断できるかを評価してください。不足がある場合、suggestion にはどのセクションにどのような反論への応答を追加すべきかを具体的に書いてください。
+  - key: applicability
+    group: practical_value
+    allow_error: false
+    article_types: [opinion]
+    modes: [article]
+    requires: []
+    instruction: |-
+      適用条件・限界: 主張が成り立つ適用条件・前提・限界が明示され、読者が「自分の状況にこの主張が当てはまるか」を判断できるかを評価してください。不足がある場合、suggestion にはどのセクションにどのような適用条件を追加すべきかを具体的に書いてください。
+  - key: impact_substance
+    group: practical_value
+    allow_error: false
+    article_types: [news]
+    modes: [article]
+    requires: []
+    instruction: |-
+      影響範囲・重要度・推奨アクションの実質性: 重要度・影響範囲・推奨アクションがラベルだけで中身が空になっておらず、誰にどう影響するか・何をいつまでにすべきかという実質的な内容を伴い、読者が自分への影響と対応要否を判断できるかを評価してください。中身が薄い場合、suggestion にはどの項目にどのような具体情報を追加すべきかを具体的に書いてください。
+  - key: diagram_readability
+    group: diagram_code
+    allow_error: false
+    article_types: [intro, impl, opinion, news]
+    modes: [article]
+    requires: [fenced_block]
+    instruction: |-
+      Mermaid 図やコードブロックの直前・直後の説明文が、読者に「この図・コードから何を読み取ればよいか」を伝えるものとして実質的に機能しているかを評価してください。図の直前に目的の説明が無い、直後に読み取りポイントの説明が無い、または形式的な一文だけで内容が伴っていない場合は、どの図・コードのどの説明が不足しているかを指摘してください。
+  - key: diagram_terminology
+    group: diagram_code
+    allow_error: false
+    article_types: [intro, impl, opinion, news]
+    modes: [article]
+    requires: [fenced_block]
+    instruction: |-
+      Mermaid 図の中で使われている主要な用語・ノード名・ラベルが、本文中で使われている用語と明らかに食い違っていないかを評価してください。図と本文で同じ概念に異なる名前が使われていて読者が対応を取れない場合は、どの用語がどう食い違っているかを指摘してください。
+  - key: code_explanation
+    group: diagram_code
+    allow_error: false
+    article_types: [impl]
+    modes: [article]
+    requires: [fenced_block]
+    instruction: |-
+      各コード例の後に「この例で重要な点」に相当する説明があり、その説明がコードの要点（どこがポイントか、どこを変えると挙動が変わるか、なぜこの書き方を選んだか等）を実質的に述べているかを評価してください。説明が無い、またはコードの内容を表面的になぞるだけで要点を述べていない場合は指摘してください。
+  - key: style_conformance
+    group: style
+    allow_error: false
+    article_types: [intro, impl, opinion, news]
+    modes: [article]
+    requires: []
+    instruction: |-
+      本文が以下の記事タイプ別文体ガイドに適合しているかを評価してください。口調や文体が途中で揺れていないか、過剰な断定や過剰に曖昧な表現がないかを確認し、逸脱している箇所とその修正案を指摘してください。
+      文体ガイド（記事タイプ: {article_type}）は同ディレクトリの style-guide.md の該当節を参照して評価してください。
+  - key: fact_opinion_separation
+    group: style
+    allow_error: false
+    article_types: [intro, impl]
+    modes: [article]
+    requires: []
+    instruction: |-
+      事実の記述・推測・筆者の意見が読み分けられる表現になっているかを評価してください。推測や筆者の意見が、確定した事実であるかのように書かれている箇所を指摘し、「〜とみられる」「筆者は〜と考える」等の表現で明示する修正案を添えてください。
+  - key: fact_opinion_separation
+    group: style
+    allow_error: false
+    article_types: [news, opinion]
+    modes: [article]
+    requires: []
+    instruction: |-
+      事実の記述・推測・筆者の意見が読み分けられる表現になっているかを評価してください。推測や筆者の意見が、確定した事実であるかのように書かれている箇所を指摘し、「〜とみられる」「筆者は〜と考える」等の表現で明示する修正案を添えてください。この記事タイプでは事実と見解の分離を特に重点的に評価し、事実の記述と推測・見解が段落や文末表現で区別されていない箇所を漏れなく指摘してください。
+  - key: excessive_rhetoric
+    group: style
+    allow_error: false
+    article_types: [intro, impl, opinion, news]
+    modes: [article]
+    requires: []
+    instruction: |-
+      過剰な比喩・口語表現・装飾的な言い回しが記事の読みやすさや正確さを損ねていないかを評価してください。多用されている箇所を指摘し、簡潔な表現への修正案を添えてください。
+  - key: lead_quality
+    group: readability
+    allow_error: false
+    article_types: [intro, impl, opinion, news, general]
+    modes: [article, document]
+    requires: []
+    instruction: |-
+      導入(最初の 2 段落以内)に、記事の要点・結論・読者がこの記事で得られるものが提示されているかを評価してください。背景説明や一般論だけで始まり、要点の提示が後回しになっている場合は指摘し、導入に前置きすべき要点を suggestion に書いてください。冒頭 2 文が抽象的な宣言（格言調）の連続で始まっていないかも確認する。読者の具体的な状況・問い・事実・数値・固有名詞のいずれかへの接地が冒頭 2 段落内にあること。
+  - key: heading_informativeness
+    group: readability
+    allow_error: false
+    article_types: [intro, impl, opinion, news, general]
+    modes: [article, document]
+    requires: []
+    instruction: |-
+      見出し(##/###)だけを抜き出して読んだとき、各セクションの内容が推測できるか(見出しの自立性・具体性)を評価してください。
+      - 「まとめ」「その他」「基本」のような汎用語のみの見出しが多用されていないか。
+      - 情報を運ぶ語(固有名詞・動詞・数値)が見出しの先頭側に置かれているか(フロントローディング)。
+      問題のある見出しには具体的な改善案を suggestion に書いてください。
+  - key: code_self_containment
+    group: readability
+    allow_error: false
+    article_types: [impl]
+    modes: [article]
+    requires: [triple_backtick]
+    instruction: |-
+      各コード例が単一の目的を持ち、そのまま動かせる自己完結性(必要な import・前提条件・実行環境の明示)を持つかを評価してください。複数の関心事が混ざったコード例や、暗黙の前提に依存するコード例を指摘してください。
+  - key: metaphor_discipline
+    group: metaphor
+    allow_error: false
+    article_types: [intro, impl, opinion, news, general]
+    modes: [article, document]
+    requires: []
+    instruction: |-
+      記事中の比喩・メタファー表現を確認する。(1) 1 つの文に複数の比喩が混在していないか、(2) 比喩と述語の意味が噛み合っているか（例: 『観測する入口』は入口が観測する主体になっており不整合）、(3) 記事全体で複数系統の比喩が乱立していないか（1 系統までが目安）。違反箇所は location で特定し、suggestion には比喩を外した直接的な表現か、既出の比喩系統への統一を提案する。
+  - key: source_fidelity
+    group: source_fidelity
+    allow_error: true
+    article_types: [intro, impl, opinion, news, general]
+    modes: [article, document]
+    requires: [research, first_round]
+    instruction: |-
+      記事本文中の中核概念の定義・数値・主要な主張が、[リサーチ結果] の記述（特に原典からの逐語引用と出典）と整合しているかを評価してください。
+      - 原典の定義より意味を狭めている（矮小化）、または広げている（拡大解釈）箇所を指摘してください。
+      - 定義の意味が変わる水準の重大な逸脱は severity="error" としてください。ニュアンスの弱まりに留まる場合は severity="warning" とします。
+      - 指摘には、リサーチ結果側の該当記述（引用）と記事側の記述を対で示し、どう修正すべきかを suggestion に書いてください。
