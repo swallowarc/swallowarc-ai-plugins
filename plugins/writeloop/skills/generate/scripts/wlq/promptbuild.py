@@ -56,7 +56,12 @@ def load_plan(path: str) -> PlanData:
             raise ValueError(f"plan frontmatter に {key} がない")
 
     def _tuple(key: str) -> tuple[str, ...]:
-        return tuple(str(v) for v in (meta.get(key) or []))
+        value = meta.get(key)
+        if value is None:
+            return ()
+        if not isinstance(value, list):
+            raise ValueError(f"plan frontmatter の {key} はリストでなければならない")
+        return tuple(str(v) for v in value)
 
     return PlanData(
         mode=mode, profile=profile,

@@ -47,6 +47,14 @@ def test_load_plan_missing_required_field(tmp_path):
         load_plan(_write_plan(tmp_path, broken))
 
 
+def test_load_plan_rejects_scalar_list_field(tmp_path):
+    broken = ARTICLE_PLAN.replace(
+        'topics_in_scope: ["Workflow の再実行モデル"]', "topics_in_scope: 記事の主題"
+    )
+    with pytest.raises(ValueError, match="topics_in_scope"):
+        load_plan(_write_plan(tmp_path, broken))
+
+
 def test_load_reference_strips_header():
     text = load_reference(REFS_DIR, "readability-guide.md")
     assert "ported from" not in text
