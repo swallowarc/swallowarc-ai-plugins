@@ -172,6 +172,11 @@ def plan_section(plan: PlanData) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _format_tags(tags: tuple[str, ...]) -> str:
+    # ported from: internal/infrastructure/llm/openai.go formatTags（%q 書式）@ autopostd 20c740b
+    return ", ".join(f'"{t}"' for t in tags)
+
+
 def _output_format_block(plan: PlanData, now: datetime) -> str:
     # ported from: internal/infrastructure/llm/openai.go buildUserPrompt 153-166 @ autopostd 20c740b
     if plan.mode == "document":
@@ -182,7 +187,7 @@ def _output_format_block(plan: PlanData, now: datetime) -> str:
         f'title: "{plan.title_draft}"\n'
         'description: "<この記事固有の説明を1〜2文で>"\n'
         f"date: {date}\n"
-        f"tags: [{', '.join(plan.tags)}]\n"
+        f"tags: [{_format_tags(plan.tags)}]\n"
         "draft: false\n---\n"
         "本文は H2 (##) から始め、H1 (#) は使わない。見出しは階層を飛ばさない。\n"
         "(本文をここに記述)\n"

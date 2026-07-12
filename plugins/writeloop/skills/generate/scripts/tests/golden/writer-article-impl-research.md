@@ -77,7 +77,7 @@ Persona の口調・キャラクター性は維持したまま、以下の文体
 title: "Temporal で学ぶ Durable Execution"
 description: "<この記事固有の説明を1〜2文で>"
 date: 2026-07-12T09:00:00+09:00
-tags: [go, temporal]
+tags: ["go", "temporal"]
 draft: false
 ---
 本文は H2 (##) から始め、H1 (#) は使わない。見出しは階層を飛ばさない。

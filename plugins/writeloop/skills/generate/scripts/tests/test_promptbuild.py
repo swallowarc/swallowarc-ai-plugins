@@ -114,7 +114,7 @@ def test_writer_article_research_block_order(tmp_path):
         "[品質ルール]", "[読まれやすさ]", "[出力形式]",
     ]
     assert "date: 2026-07-12T09:00:00+09:00" in prompt
-    assert "tags: [go, temporal]" in prompt
+    assert 'tags: ["go", "temporal"]' in prompt
 
 
 def test_writer_article_basic_intro_omits_conditionals(tmp_path):
@@ -156,3 +156,17 @@ def test_writer_golden_article_impl_research(tmp_path):
     prompt = build_writer_prompt(load_plan(_write_plan(tmp_path)), "リサーチ本文", REFS_DIR, FIXED_NOW)
     golden = (Path(__file__).parent / "golden" / "writer-article-impl-research.md").read_text(encoding="utf-8")
     assert prompt == golden
+
+
+def test_writer_document_basic_fully_reduced(tmp_path):
+    text = DOCUMENT_PLAN.replace("profile: research", "profile: basic")
+    prompt = build_writer_prompt(load_plan(_write_plan(tmp_path, text)), None, REFS_DIR, FIXED_NOW)
+    assert _headers(prompt) == ["[投稿計画]", "[品質ルール]", "[読まれやすさ]", "[出力形式]"]
+
+
+def test_writer_document_output_format_title_only(tmp_path):
+    prompt = build_writer_prompt(load_plan(_write_plan(tmp_path, DOCUMENT_PLAN)), "調査", REFS_DIR, FIXED_NOW)
+    tail = prompt.split("[出力形式]\n", 1)[1]
+    assert 'title: "MCP サーバーの認可モデル調査"' in tail
+    for absent in ("description:", "date:", "tags:", "draft:", "H2"):
+        assert absent not in tail
