@@ -35,7 +35,7 @@ def _read_text_file(path: str, label: str) -> str:
     try:
         with open(path, encoding="utf-8") as f:
             return f.read()
-    except OSError as e:
+    except (OSError, UnicodeDecodeError) as e:
         print(f"error: failed to read {label} file {path!r}: {e}", file=sys.stderr)
         sys.exit(1)
 

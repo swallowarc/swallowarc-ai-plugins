@@ -113,6 +113,26 @@ def test_cli_invalid_mode_exits_nonzero(tmp_path):
     assert r.returncode != 0
 
 
+def test_cli_non_utf8_draft_exits_nonzero(tmp_path):
+    draft = tmp_path / "d.md"
+    draft.write_bytes(b"\xff\xfe\x00invalid utf-8 \x80\x81")
+    r = run_cli("--draft", str(draft), "--mode", "document", "--out", "-")
+    assert r.returncode != 0
+    assert r.stderr.startswith("error:")
+
+
+def test_cli_malformed_plan_frontmatter_exits_nonzero(tmp_path):
+    draft = tmp_path / "d.md"
+    draft.write_text("自由なメモ。", encoding="utf-8")
+    plan = tmp_path / "plan.md"
+    plan.write_text('---\narticle_type: "unterminated\n---\n計画本文\n', encoding="utf-8")
+    r = run_cli(
+        "--draft", str(draft), "--mode", "article", "--plan", str(plan), "--out", "-",
+    )
+    assert r.returncode != 0
+    assert r.stderr.startswith("error:")
+
+
 def test_cli_resolves_article_type_and_constraints_from_plan(tmp_path):
     draft = tmp_path / "d.md"
     draft.write_text(

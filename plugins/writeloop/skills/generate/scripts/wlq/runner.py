@@ -2,6 +2,9 @@
 #              @ autopostd 20c740b
 #              internal/domain/judge_aspects_diagram_code.go:10-18 (containsFencedBlock)
 #              @ autopostd 20c740b
+#              internal/domain/judge_aspects_readability.go:27
+#              (strings.Contains(content, "```") -> facts.contains_triple_backtick)
+#              @ autopostd 20c740b
 """Task 1〜11 の全チェック関数を本番 `RuleBasedChecker.Check`（checker.go:264-326）と
 同一順序で束ねる runner。
 
@@ -105,6 +108,40 @@ def _contains_fenced_block(content: str) -> bool:
     return False
 
 
+def _run_prose_checks(prose: str, body: str) -> list[Finding]:
+    """可読性・AI 文体系チェック（check_sentence_length 〜 check_reason_template_freq）を
+    Go の Check() 登録順のまま実行する（article / document 両モード共通の区間）。
+
+    prose 系チェックは extract_prose 済みの prose を、行単位・コードブロック系
+    チェック（bold_colon_list / emoji_markers / code_line_length）は body を受け取る
+    （checker.go:287-313 の引数対応と同一）。
+    """
+    findings: list[Finding] = []
+
+    findings.extend(check_sentence_length(prose))
+    findings.append(check_sentence_commas(prose))
+    findings.append(check_kanji_run(prose))
+    findings.append(check_weak_expressions(prose))
+
+    findings.append(check_bold_colon_list(body))
+    findings.append(check_emoji_markers(body))
+    findings.append(check_hype_expressions(prose))
+    findings.append(check_code_line_length(body))
+
+    findings.append(check_sentence_ending_run(prose))
+    findings.append(check_sentence_ending_variety(prose))
+    findings.append(check_rhetorical_contrast_freq(prose))
+    findings.append(check_negation_first_freq(prose))
+    findings.append(check_cliche_phrases(prose))
+
+    findings.append(check_paragraph_uniformity(prose))
+    findings.append(check_hard_line_breaks(prose))
+    findings.append(check_first_person_freq(prose))
+    findings.append(check_reason_template_freq(prose))
+
+    return findings
+
+
 def _run_article_checks(
     content: str,
     article_type: str,
@@ -136,26 +173,7 @@ def _run_article_checks(
         findings.append(check_body_length(constraints, body))
 
         prose = extract_prose(body)
-        findings.extend(check_sentence_length(prose))
-        findings.append(check_sentence_commas(prose))
-        findings.append(check_kanji_run(prose))
-        findings.append(check_weak_expressions(prose))
-
-        findings.append(check_bold_colon_list(body))
-        findings.append(check_emoji_markers(body))
-        findings.append(check_hype_expressions(prose))
-        findings.append(check_code_line_length(body))
-
-        findings.append(check_sentence_ending_run(prose))
-        findings.append(check_sentence_ending_variety(prose))
-        findings.append(check_rhetorical_contrast_freq(prose))
-        findings.append(check_negation_first_freq(prose))
-        findings.append(check_cliche_phrases(prose))
-
-        findings.append(check_paragraph_uniformity(prose))
-        findings.append(check_hard_line_breaks(prose))
-        findings.append(check_first_person_freq(prose))
-        findings.append(check_reason_template_freq(prose))
+        findings.extend(_run_prose_checks(prose, body))
 
     findings.append(check_required_sections(article_type, content))
     findings.extend(check_references(article_type, research_content, content))
@@ -180,26 +198,7 @@ def _run_document_checks(
         body = content
 
     prose = extract_prose(body)
-    findings.extend(check_sentence_length(prose))
-    findings.append(check_sentence_commas(prose))
-    findings.append(check_kanji_run(prose))
-    findings.append(check_weak_expressions(prose))
-
-    findings.append(check_bold_colon_list(body))
-    findings.append(check_emoji_markers(body))
-    findings.append(check_hype_expressions(prose))
-    findings.append(check_code_line_length(body))
-
-    findings.append(check_sentence_ending_run(prose))
-    findings.append(check_sentence_ending_variety(prose))
-    findings.append(check_rhetorical_contrast_freq(prose))
-    findings.append(check_negation_first_freq(prose))
-    findings.append(check_cliche_phrases(prose))
-
-    findings.append(check_paragraph_uniformity(prose))
-    findings.append(check_hard_line_breaks(prose))
-    findings.append(check_first_person_freq(prose))
-    findings.append(check_reason_template_freq(prose))
+    findings.extend(_run_prose_checks(prose, body))
 
     if research_content is not None:
         findings.extend(check_references(article_type, research_content, content))
