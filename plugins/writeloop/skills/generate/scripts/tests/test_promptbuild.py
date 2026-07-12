@@ -213,3 +213,50 @@ def test_judge_prompt_research_requires_source_fidelity(tmp_path):
     with_research = build_judge_prompt(plan, "x", aspects, "リサーチ")
     assert "[リサーチ結果]" in with_research
     assert with_research.index("[リサーチ結果]") < with_research.index("[記事本文]")
+
+
+from wlq.promptbuild import build_fixer_prompt, render_finding
+
+
+def test_render_finding_full_and_minimal():
+    full = render_finding({"name": "llm_judge", "category": "concrete_examples",
+                           "detail": "具体例がない", "location": "セクション「導入」", "suggestion": "例を足す"})
+    assert full == "- llm_judge (concrete_examples): 具体例がない\n  - 場所: セクション「導入」\n  - 修正案: 例を足す"
+    assert render_finding({"name": "body_length", "detail": "短すぎる"}) == "- body_length: 短すぎる"
+
+
+DECISION = {
+    "error_findings": [{"name": "body_length", "passed": False, "severity": "error", "detail": "短すぎる"}],
+    "warning_findings": [{"name": "llm_judge", "category": "lead_quality", "passed": False,
+                          "severity": "warning", "detail": "リードが弱い"}],
+}
+
+
+def test_fixer_prompt_blocks(tmp_path):
+    plan = load_plan(_write_plan(tmp_path))  # article / impl / research
+    prompt = build_fixer_prompt(plan, "# 修正前\n", DECISION, REFS_DIR, FIXED_NOW)
+    assert _headers(prompt) == [
+        "[文体ガイド（記事タイプ: impl）]", "[修正対象記事]", "[修正必須の指摘]",
+        "[可能なら改善]", "[必須セクション]", "[参考情報要件]", "[修正前のコンテンツ]",
+    ]
+    assert "以下の指摘は必ず修正すること:" in prompt
+
+
+def test_fixer_prompt_no_warnings_omits_optional_block(tmp_path):
+    plan = load_plan(_write_plan(tmp_path))
+    decision = {**DECISION, "warning_findings": []}
+    assert "[可能なら改善]" not in build_fixer_prompt(plan, "x", decision, REFS_DIR, FIXED_NOW)
+
+
+def test_fixer_prompt_rejects_empty_errors(tmp_path):
+    plan = load_plan(_write_plan(tmp_path))
+    with pytest.raises(ValueError):
+        build_fixer_prompt(plan, "x", {"error_findings": [], "warning_findings": []}, REFS_DIR, FIXED_NOW)
+
+
+def test_fixer_prompt_document_mode_omits_style_and_required_sections(tmp_path):
+    plan = load_plan(_write_plan(tmp_path, DOCUMENT_PLAN))
+    prompt = build_fixer_prompt(plan, "# 修正前\n", DECISION, REFS_DIR, FIXED_NOW)
+    assert _headers(prompt) == [
+        "[修正対象記事]", "[修正必須の指摘]", "[可能なら改善]", "[参考情報要件]", "[修正前のコンテンツ]",
+    ]

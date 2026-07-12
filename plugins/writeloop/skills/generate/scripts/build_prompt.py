@@ -14,7 +14,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import yaml  # noqa: E402
 
-from wlq.promptbuild import _JST, build_judge_prompt, build_writer_prompt, load_plan  # noqa: E402
+from wlq.promptbuild import (  # noqa: E402
+    _JST, build_fixer_prompt, build_judge_prompt, build_writer_prompt, load_plan,
+)
 
 DEFAULT_REFS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "references")
 
@@ -85,6 +87,25 @@ def _cmd_judge(args: argparse.Namespace) -> int:
     return _write_text(prompt, args.out)
 
 
+def _cmd_fixer(args: argparse.Namespace) -> int:
+    plan = _load_plan_checked(args)
+    draft = _read_text(args.draft, "draft")
+    try:
+        decision = json.loads(_read_text(args.decision, "decision"))
+    except json.JSONDecodeError as e:
+        print(f"error: failed to parse decision file {args.decision!r} as JSON: {e}", file=sys.stderr)
+        return 1
+    if not isinstance(decision, dict):
+        print(f"error: decision file {args.decision!r} must contain a JSON object", file=sys.stderr)
+        return 1
+    try:
+        prompt = build_fixer_prompt(plan, draft, decision, args.refs_dir, datetime.now(_JST))
+    except (OSError, UnicodeDecodeError, KeyError, ValueError) as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
+    return _write_text(prompt, args.out)
+
+
 def _add_common(p: argparse.ArgumentParser) -> None:
     p.add_argument("--plan", required=True, help="plan.md のパス")
     p.add_argument("--mode", required=True, choices=["article", "document"])
@@ -103,6 +124,10 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     judge_p.add_argument("--draft", required=True, help="draft markdown ファイルのパス")
     judge_p.add_argument("--aspects", required=True, help="review_gate aspects が出力した aspects.json のパス")
     judge_p.add_argument("--research", default=None, help="research.md のパス（任意）")
+    fixer_p = sub.add_parser("fixer", help="fixer 用プロンプトを組み立てる")
+    _add_common(fixer_p)
+    fixer_p.add_argument("--draft", required=True, help="修正前 draft のパス")
+    fixer_p.add_argument("--decision", required=True, help="review_gate decide が出力した decision.json のパス")
     return parser
 
 
@@ -112,6 +137,8 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_writer(args)
     if args.command == "judge":
         return _cmd_judge(args)
+    if args.command == "fixer":
+        return _cmd_fixer(args)
     raise AssertionError(f"unknown command: {args.command}")
 
 

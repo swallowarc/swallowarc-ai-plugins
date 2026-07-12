@@ -223,6 +223,48 @@ def build_judge_prompt(plan: PlanData, draft: str, aspects: list[dict], research
     return "\n".join(blocks)
 
 
+# ported from: internal/infrastructure/llm/draft_fixer.go buildUserPrompt / writeFinding @ autopostd 20c740b
+_FIX_REQUIRED_INTRO = "以下の指摘は必ず修正すること:"
+_FIX_OPTIONAL_INTRO = "以下は修正必須ではないが、記事の構造を壊さずに対応できる場合は改善すること:"
+
+
+def render_finding(f: dict) -> str:
+    head = f"- {f.get('name', '')}"
+    if f.get("category"):
+        head += f" ({f['category']})"
+    head += f": {f.get('detail', '')}"
+    lines = [head]
+    if f.get("location"):
+        lines.append(f"  - 場所: {f['location']}")
+    if f.get("suggestion"):
+        lines.append(f"  - 修正案: {f['suggestion']}")
+    return "\n".join(lines)
+
+
+def build_fixer_prompt(plan: PlanData, draft: str, decision: dict, refs_dir: str, now: datetime) -> str:
+    errors = decision.get("error_findings")
+    warnings = decision.get("warning_findings")
+    if not isinstance(errors, list) or not isinstance(warnings, list):
+        raise ValueError("decision.json に error_findings / warning_findings の配列がない")
+    if not errors:
+        raise ValueError("error_findings が空。verdict=continue のときだけ fixer を呼ぶこと")
+    blocks: list[str] = []
+    if plan.mode == "article":
+        blocks.append(style_guide_block(refs_dir, plan.article_type))
+    blocks.append(f"[修正対象記事]\nタイトル: {plan.title_draft}\n")
+    blocks.append("[修正必須の指摘]\n" + _FIX_REQUIRED_INTRO + "\n"
+                  + "\n".join(render_finding(f) for f in errors) + "\n")
+    if warnings:
+        blocks.append("[可能なら改善]\n" + _FIX_OPTIONAL_INTRO + "\n"
+                      + "\n".join(render_finding(f) for f in warnings) + "\n")
+    if plan.mode == "article":
+        blocks.append(required_sections_block(refs_dir, plan.article_type))
+    if requires_references(plan):
+        blocks.append(reference_requirements_block(refs_dir, now))
+    blocks.append("[修正前のコンテンツ]\n" + draft.rstrip("\n") + "\n")
+    return "\n".join(blocks)
+
+
 def build_writer_prompt(plan: PlanData, research: str | None, refs_dir: str, now: datetime) -> str:
     blocks: list[str] = []
     if plan.mode == "article":

@@ -74,3 +74,33 @@ def test_judge_cli_invalid_aspects_shape(tmp_path):
         "--draft", str(draft), "--aspects", str(aspects), "--out", "-",
     ])
     assert r.returncode == 1 and r.stderr.startswith("error:")
+
+
+def test_fixer_cli_writes_prompt(tmp_path):
+    plan = tmp_path / "plan.md"; plan.write_text(ARTICLE_PLAN, encoding="utf-8")
+    draft = tmp_path / "draft.md"; draft.write_text("# 修正前\n", encoding="utf-8")
+    decision = tmp_path / "decision.json"
+    decision.write_text(
+        '{"error_findings": [{"name": "body_length", "passed": false, '
+        '"severity": "error", "detail": "短すぎる"}], "warning_findings": []}',
+        encoding="utf-8",
+    )
+    out = tmp_path / "fixer-prompt.md"
+    r = run_cli([
+        "fixer", "--plan", str(plan), "--mode", "article",
+        "--draft", str(draft), "--decision", str(decision), "--out", str(out),
+    ])
+    assert r.returncode == 0, r.stderr
+    assert out.read_text(encoding="utf-8").startswith("[文体ガイド（記事タイプ: impl）]")
+
+
+def test_fixer_cli_empty_error_findings_exits_1(tmp_path):
+    plan = tmp_path / "plan.md"; plan.write_text(ARTICLE_PLAN, encoding="utf-8")
+    draft = tmp_path / "draft.md"; draft.write_text("# 修正前\n", encoding="utf-8")
+    decision = tmp_path / "decision.json"
+    decision.write_text('{"error_findings": [], "warning_findings": []}', encoding="utf-8")
+    r = run_cli([
+        "fixer", "--plan", str(plan), "--mode", "article",
+        "--draft", str(draft), "--decision", str(decision), "--out", "-",
+    ])
+    assert r.returncode == 1 and r.stderr.startswith("error:")
