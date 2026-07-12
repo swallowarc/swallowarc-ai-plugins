@@ -195,6 +195,16 @@ def test_judge_prompt_omits_severity_block_when_all_allow_error(tmp_path):
     assert "[severity 制約]" not in prompt
 
 
+def test_judge_prompt_document_article_info(tmp_path):
+    plan = load_plan(_write_plan(tmp_path, DOCUMENT_PLAN))
+    prompt = build_judge_prompt(plan, "# 本文\n", ASPECTS, None)
+    info = prompt.split("[評価観点]", 1)[0]
+    assert '- タイトル: MCP サーバーの認可モデル調査' in info
+    assert "- 知りたいこと:" in info
+    for absent in ("- 記事タイプ:", "- 想定読者:", "- ゴール:"):
+        assert absent not in info
+
+
 def test_judge_prompt_research_requires_source_fidelity(tmp_path):
     plan = load_plan(_write_plan(tmp_path))
     without = build_judge_prompt(plan, "x", ASPECTS, "リサーチ")
