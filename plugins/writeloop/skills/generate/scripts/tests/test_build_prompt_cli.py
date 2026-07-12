@@ -44,3 +44,33 @@ def test_writer_cli_mode_mismatch(tmp_path):
     plan = tmp_path / "plan.md"; plan.write_text(ARTICLE_PLAN, encoding="utf-8")
     r = run_cli(["writer", "--plan", str(plan), "--mode", "document", "--out", "-"])
     assert r.returncode == 1 and r.stderr.startswith("error:")
+
+
+def test_judge_cli_writes_prompt(tmp_path):
+    plan = tmp_path / "plan.md"; plan.write_text(ARTICLE_PLAN, encoding="utf-8")
+    draft = tmp_path / "draft.md"; draft.write_text("# 本文\n", encoding="utf-8")
+    aspects = tmp_path / "aspects.json"
+    aspects.write_text(
+        '{"schema_version": 1, "aspects": '
+        '[{"key": "failure_cases", "allow_error": false, "instruction": "失敗例を評価する"}]}',
+        encoding="utf-8",
+    )
+    out = tmp_path / "judge-prompt.md"
+    r = run_cli([
+        "judge", "--plan", str(plan), "--mode", "article",
+        "--draft", str(draft), "--aspects", str(aspects), "--out", str(out),
+    ])
+    assert r.returncode == 0, r.stderr
+    assert out.read_text(encoding="utf-8").startswith("[severity 制約]")
+
+
+def test_judge_cli_invalid_aspects_shape(tmp_path):
+    plan = tmp_path / "plan.md"; plan.write_text(ARTICLE_PLAN, encoding="utf-8")
+    draft = tmp_path / "draft.md"; draft.write_text("# 本文\n", encoding="utf-8")
+    aspects = tmp_path / "aspects.json"
+    aspects.write_text('{"aspects": "x"}', encoding="utf-8")
+    r = run_cli([
+        "judge", "--plan", str(plan), "--mode", "article",
+        "--draft", str(draft), "--aspects", str(aspects), "--out", "-",
+    ])
+    assert r.returncode == 1 and r.stderr.startswith("error:")

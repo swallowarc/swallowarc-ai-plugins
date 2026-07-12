@@ -170,3 +170,36 @@ def test_writer_document_output_format_title_only(tmp_path):
     assert 'title: "MCP サーバーの認可モデル調査"' in tail
     for absent in ("description:", "date:", "tags:", "draft:", "H2"):
         assert absent not in tail
+
+
+from wlq.promptbuild import build_judge_prompt
+
+ASPECTS = [
+    {"key": "concrete_examples", "allow_error": True, "instruction": "具体例を評価する"},
+    {"key": "failure_cases", "allow_error": False, "instruction": "失敗例を評価する"},
+]
+
+
+def test_judge_prompt_structure(tmp_path):
+    plan = load_plan(_write_plan(tmp_path))
+    prompt = build_judge_prompt(plan, "# 本文\n", ASPECTS, None)
+    assert _headers(prompt) == ["[severity 制約]", "[記事情報]", "[評価観点]", "[記事本文]"]
+    assert "  - failure_cases" in prompt          # allow_error=false のみ列挙
+    assert "  - concrete_examples" not in prompt.split("[記事情報]")[0]
+    assert "- concrete_examples: 具体例を評価する" in prompt
+
+
+def test_judge_prompt_omits_severity_block_when_all_allow_error(tmp_path):
+    plan = load_plan(_write_plan(tmp_path))
+    prompt = build_judge_prompt(plan, "x", [ASPECTS[0]], None)
+    assert "[severity 制約]" not in prompt
+
+
+def test_judge_prompt_research_requires_source_fidelity(tmp_path):
+    plan = load_plan(_write_plan(tmp_path))
+    without = build_judge_prompt(plan, "x", ASPECTS, "リサーチ")
+    assert "[リサーチ結果]" not in without       # source_fidelity 非選定なら research があっても入れない
+    aspects = ASPECTS + [{"key": "source_fidelity", "allow_error": True, "instruction": "照合する"}]
+    with_research = build_judge_prompt(plan, "x", aspects, "リサーチ")
+    assert "[リサーチ結果]" in with_research
+    assert with_research.index("[リサーチ結果]") < with_research.index("[記事本文]")

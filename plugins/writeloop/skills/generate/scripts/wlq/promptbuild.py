@@ -194,6 +194,35 @@ def _output_format_block(plan: PlanData, now: datetime) -> str:
     )
 
 
+# ported from: internal/infrastructure/llm/judge_common.go buildJudgeUserPrompt @ autopostd 20c740b
+_SOURCE_FIDELITY_NOTE = "source_fidelity 観点では、記事本文の定義・主張をこのリサーチ結果(逐語引用・出典を含む)と照合すること。"
+
+
+def build_judge_prompt(plan: PlanData, draft: str, aspects: list[dict], research: str | None) -> str:
+    for a in aspects:
+        if not isinstance(a.get("key"), str) or not isinstance(a.get("allow_error"), bool) \
+                or not isinstance(a.get("instruction"), str):
+            raise ValueError(f"aspects エントリが不正: {a!r}")
+    blocks: list[str] = []
+    no_error = [a["key"] for a in aspects if not a["allow_error"]]
+    if no_error:
+        lines = ["[severity 制約]", '- 次の観点は error を許可しない。必ず severity="warning" とする:']
+        lines += [f"  - {k}" for k in no_error]
+        blocks.append("\n".join(lines) + "\n")
+    if plan.mode == "document":
+        info = ["[記事情報]", f"- タイトル: {plan.title_draft}", "- 知りたいこと:"]
+        info += [f"  - {q}" for q in plan.questions]
+    else:
+        info = ["[記事情報]", f"- タイトル: {plan.title_draft}", f"- 記事タイプ: {plan.article_type}",
+                f"- 想定読者: {plan.target_audience}", f"- ゴール: {plan.goal}"]
+    blocks.append("\n".join(info) + "\n")
+    blocks.append("\n".join(["[評価観点]"] + [f"- {a['key']}: {a['instruction']}" for a in aspects]) + "\n")
+    if research is not None and any(a["key"] == "source_fidelity" for a in aspects):
+        blocks.append("[リサーチ結果]\n" + _SOURCE_FIDELITY_NOTE + "\n" + research.rstrip("\n") + "\n")
+    blocks.append("[記事本文]\n" + draft.rstrip("\n") + "\n")
+    return "\n".join(blocks)
+
+
 def build_writer_prompt(plan: PlanData, research: str | None, refs_dir: str, now: datetime) -> str:
     blocks: list[str] = []
     if plan.mode == "article":
