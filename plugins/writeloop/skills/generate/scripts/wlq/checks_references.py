@@ -64,13 +64,85 @@ _REF_URL_RE = regex.compile(r'(?i)https?://[^\s<>\[\]()（）"\']+')
 _VERIFICATION_DATE_RE = regex.compile(r"情報確認日[:：]\s*(\d{4}-\d{2}-\d{2})")
 
 
+# net/url shouldEscape(c, encodePath) が false（escape しない）とする文字。
+# 英数字と -_.~（§2.3 unreserved）、および予約文字 $&+,/:;=?@ のうち
+# encodePath では ? のみ escape 対象のため ? を除いた残り。
+_GO_PATH_NO_ESCAPE = frozenset(
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    "-_.~$&+,/:;=@"
+)
+
+# net/url validEncoded(s, encodePath) が「エスケープ済みパスとして妥当」と
+# 認める文字。shouldEscape が false の文字に加え、明示的に許される
+# !'()*;[]（sub-delims 等）と %（percent-encoding の開始）。
+_GO_PATH_VALID_ENCODED = frozenset(
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    "-_.~!$&'()*+,;=:@[]%/"
+)
+
+_HEX_DIGITS = frozenset("0123456789abcdefABCDEF")
+
+
+def _go_escape_path(path: bytes) -> str:
+    """net/url の escape(s, encodePath) の移植。UTF-8 バイト単位で、encodePath で
+    escape 対象のバイトを %XX（大文字 hex）に符号化する。
+    """
+    out: list[str] = []
+    for b in path:
+        c = chr(b)
+        if c in _GO_PATH_NO_ESCAPE:
+            out.append(c)
+        else:
+            out.append(f"%{b:02X}")
+    return "".join(out)
+
+
+def _go_unescape_path(raw: str) -> bytes | None:
+    """net/url の unescape(s, encodePath) の移植。%XX（hex 2 桁必須）を検証しつつ
+    バイト列へ復号する。不正なエスケープは None（url.Parse のエラー相当）。
+    パスモードでは + を空白に復号しない。
+    """
+    data = raw.encode("utf-8")
+    out = bytearray()
+    i = 0
+    while i < len(data):
+        if data[i] == 0x25:  # "%"
+            if i + 2 >= len(data):
+                return None
+            h1, h2 = chr(data[i + 1]), chr(data[i + 2])
+            if h1 not in _HEX_DIGITS or h2 not in _HEX_DIGITS:
+                return None
+            out.append(int(h1 + h2, 16))
+            i += 3
+        else:
+            out.append(data[i])
+            i += 1
+    return bytes(out)
+
+
 def _normalize_url(raw: str) -> str | None:
     """normalizeURL（checker_references.go:21）の移植。
 
     URL を照合用に正規化する。scheme と host を小文字化し、フラグメントと
     末尾スラッシュを除去する。クエリは保持する。文末の句読点（。、.,;:）が
     正規表現抽出で紛れ込むため事前に除去する。正規化できない（絶対 URL で
-    ない）場合は None を返す（Go の error 相当）。
+    ない・不正な %エスケープを含む）場合は None を返す（Go の error 相当）。
+
+    Go は u.String() 経由で net/url の EscapedPath によるパス再エンコードを
+    行うため、それを忠実に再現する:
+    (1) setPath 相当 — raw パスを復号して u.Path 相当を得る。canonical に
+        再エンコードした結果が raw と一致する場合は RawPath 相当を保持しない。
+    (2) 復号後のパスから末尾スラッシュを除去（TrimSuffix は u.Path に対して
+        行われる）。
+    (3) EscapedPath 相当 — 保持した元表記が valid なエスケープ済みパスで、
+        かつ復号結果が現在のパスと一致するならそのまま使い、そうでなければ
+        canonical（%XX 大文字 hex）に再エンコードする。
+    この結果、生の日本語・スペースを含むパスは %XX に符号化され、既に
+    percent-encoded 済みのパスはパス未変更なら元表記（小文字 hex 含む）の
+    まま保持され、末尾スラッシュ除去でパスが変更された場合は canonical に
+    再符号化される。query（RawQuery 相当）は Go の String() 同様に素通しする。
+    期待値は使い捨て Go スニペットのゴールデン出力と突き合わせて検証済み
+    （テスト側 docstring 参照）。
     """
     raw = raw.rstrip(".,;:。、")
     try:
@@ -79,10 +151,44 @@ def _normalize_url(raw: str) -> str | None:
         return None
     if not parts.scheme or not parts.netloc:
         return None
-    path = parts.path
-    if path.endswith("/"):
-        path = path[:-1]
-    return urlunsplit((parts.scheme.lower(), parts.netloc.lower(), path, parts.query, ""))
+
+    # url.Parse の ForceQuery 相当: フラグメント除去後の残りが末尾の「?」1 個
+    # だけで終わる場合、Go の String() は空クエリでも「?」を出力する。
+    without_fragment = raw.split("#", 1)[0]
+    force_query = without_fragment.endswith("?") and without_fragment.count("?") == 1
+
+    # (1) url.Parse の setPath 相当
+    decoded = _go_unescape_path(parts.path)
+    if decoded is None:
+        return None  # url.Parse が invalid URL escape エラーになるケース
+    raw_path = parts.path if _go_escape_path(decoded) != parts.path else ""
+
+    # (2) u.Path = strings.TrimSuffix(u.Path, "/")
+    if decoded.endswith(b"/"):
+        decoded = decoded[:-1]
+
+    # (3) u.String() が使う u.EscapedPath() 相当
+    if (
+        raw_path
+        and all(c in _GO_PATH_VALID_ENCODED for c in raw_path)
+        and _go_unescape_path(raw_path) == decoded
+    ):
+        escaped_path = raw_path
+    else:
+        escaped_path = _go_escape_path(decoded)
+
+    # Go は u.Host（userinfo を含まない）のみ小文字化する
+    netloc = parts.netloc
+    if "@" in netloc:
+        userinfo, host = netloc.rsplit("@", 1)
+        netloc = f"{userinfo}@{host.lower()}"
+    else:
+        netloc = netloc.lower()
+
+    out = urlunsplit((parts.scheme.lower(), netloc, escaped_path, parts.query, ""))
+    if force_query and not parts.query:
+        out += "?"
+    return out
 
 
 def _normalized_urls(text: str) -> set[str]:

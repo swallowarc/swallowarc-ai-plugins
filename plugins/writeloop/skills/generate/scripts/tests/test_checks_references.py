@@ -51,6 +51,13 @@ TestCheckReferences_SectionMissing
         -> test_check_references_section_missing_required_by_news_type
 TestCheckReferences_AllPass
     -> test_check_references_all_pass
+       （変換注記: Go は generation_profile="research"・researchContent=nil で
+       required=True にするが、writeloop の required シグナルは research_content
+       の有無のため、本文中の URL を含む research_content を渡して required=True
+       にし、4 チェックすべてが skip でなく実ロジックで pass することを検証する。
+       Go 側の researchContent=nil による research_reference_match の nil-skip
+       経路は test_check_research_reference_match_nil_research_is_skip で
+       別途カバーする）
 TestCheckReferences_SectionAliases
     -> test_check_references_section_aliases
 TestCheckReferences_SectionHeadingInsideCodeFenceIgnored
@@ -124,6 +131,21 @@ test_check_references_required_by_research_content_present_section_missing:
    article_type を news 以外にし、URL を含む research_content を渡すことで
    required=True かつ research_reference_match も skip にならないケースを
    検証する。
+
+test_normalize_url_golden_path_reencoding /
+test_normalize_url_invalid_escape_is_error /
+test_check_research_reference_match_mixed_raw_and_encoded_url:
+   Go の normalizeURL は url.Parse(...).String() 経由で net/url の
+   EscapedPath によるパス再エンコードを行う（生の日本語・スペースは %XX に
+   符号化、canonical な percent-encoded パスや小文字 hex の既存エスケープは
+   パス未変更なら元表記のまま保持、末尾スラッシュ除去でパスが変更されると
+   canonical（大文字 hex）に再符号化、query（RawQuery）は素通し、不正な
+   %エスケープは Parse エラー）。この挙動の期待値は、autopostd の
+   normalizeURL と同一ロジックを複製した使い捨て Go スニペット
+   （scratchpad 配下、リポジトリ外）を `go run` して得たゴールデン出力を
+   一字一句移植したもの。checker_references_test.go には無いケースだが、
+   生 Unicode URL と percent-encoded URL の混在時に research_reference_match
+   の照合結果が Go と一致することを保証するために追加した（レビュー指摘対応）。
 """
 from wlq.checks_references import _normalize_url, _normalized_urls, check_references
 
@@ -165,6 +187,53 @@ def test_normalize_url_trims_trailing_japanese_punctuation():
 
 def test_normalize_url_relative_url_is_error():
     assert _normalize_url("/relative/path") is None
+
+
+# --- _normalize_url: net/url パス再エンコードのゴールデンテスト ---
+# 期待値は autopostd の normalizeURL と同一ロジックの使い捨て Go スニペットを
+# `go run` して生成したゴールデン出力（詳細はモジュール docstring 参照）。
+
+
+def test_normalize_url_golden_path_reencoding():
+    golden = [
+        # 生の日本語パスは %XX（大文字 hex）に符号化される
+        ("https://example.com/こんにちは",
+         "https://example.com/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF"),
+        # 生スペースは %20 に符号化される
+        ("https://example.com/a b", "https://example.com/a%20b"),
+        # canonical（大文字 hex）に percent-encoded 済みのパスは不変
+        ("https://example.com/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF",
+         "https://example.com/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF"),
+        ("https://example.com/a%20b", "https://example.com/a%20b"),
+        # 小文字 hex の既存エスケープは、パス未変更なら元表記のまま保持される
+        ("https://example.com/%e3%81%93%e3%82%93",
+         "https://example.com/%e3%81%93%e3%82%93"),
+        # 末尾スラッシュ除去でパスが変更されると canonical（大文字）に再符号化される
+        ("https://example.com/%e3%81%93%e3%82%93/",
+         "https://example.com/%E3%81%93%E3%82%93"),
+        ("https://example.com/%E3%81%93%E3%82%93/",
+         "https://example.com/%E3%81%93%E3%82%93"),
+        ("https://example.com/こんにちは/",
+         "https://example.com/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF"),
+        # query（RawQuery）は素通し（日本語も符号化されない）
+        ("https://example.com/a?q=こんにちは", "https://example.com/a?q=こんにちは"),
+        # sub-delims の ! は escape 対象だが、パス未変更なら元表記が保持される
+        ("https://example.com/a!b", "https://example.com/a!b"),
+        # パス変更（末尾スラッシュ除去）で ! も %21 に再符号化される
+        ("https://example.com/a!b/", "https://example.com/a%21b"),
+        # + はパスの予約文字として不変（空白扱いの復号もしない）
+        ("https://example.com/a+b", "https://example.com/a+b"),
+        # 末尾の裸 ? は Go の ForceQuery として保持される
+        ("https://example.com/a?", "https://example.com/a?"),
+    ]
+    for raw, want in golden:
+        got = _normalize_url(raw)
+        assert got == want, f"_normalize_url({raw!r}) = {got!r}, want {want!r}"
+
+
+def test_normalize_url_invalid_escape_is_error():
+    # Go: url.Parse が invalid URL escape "%zz" でエラー → normalizeURL もエラー
+    assert _normalize_url("https://example.com/%zz") is None
 
 
 # --- _normalized_urls ---
@@ -242,11 +311,21 @@ _VALID_REFERENCES_BODY = """本文です。
 
 
 def test_check_references_all_pass():
-    findings = check_references("intro", None, _VALID_REFERENCES_BODY)
+    # Go は generation_profile="research"・researchContent=nil で required=True に
+    # するが、writeloop の required シグナルは research_content の有無のため、
+    # 本文中の URL を含む research_content を渡して required=True にし、
+    # 4 チェックすべてが skip でなく実ロジックで pass することを検証する。
+    research = "参考: https://go.dev/doc/go1.24 を確認"
+    findings = check_references("intro", research, _VALID_REFERENCES_BODY)
     for name in ("references_section", "reference_entries", "verification_date",
                  "research_reference_match"):
         f = _find(findings, name)
         assert f.passed, f"expected {name} to pass, got failed ({f.detail})"
+    # skip 分岐でなく実ロジックを通ったことを detail で確認する
+    assert _find(findings, "references_section").detail == "references section found"
+    assert _find(findings, "research_reference_match").detail == (
+        "reference URL matches research URL: https://go.dev/doc/go1.24"
+    )
 
 
 def test_check_references_section_aliases():
@@ -399,3 +478,24 @@ def test_check_research_reference_match_section_missing_but_research_has_urls():
     research = "出典: https://go.dev/doc/go1.24"
     findings = check_references("intro", research, "## まとめ\n本文のみ")
     assert not _find(findings, "research_reference_match").passed
+
+
+def test_check_research_reference_match_mixed_raw_and_encoded_url():
+    """補足テスト（Go テスト由来ではない。レビュー指摘対応）。
+
+    research 側が生の日本語 URL・記事側が percent-encoded URL でも、
+    net/url 相当のパス再エンコードにより正規化後は一致する。
+    """
+    research = "出典: https://example.com/こんにちは を参照"
+    body = (
+        "## 参考情報\n\n"
+        "- [x](https://example.com/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF)（一次情報）\n\n"
+        "情報確認日: 2026-07-03\n"
+    )
+    findings = check_references("intro", research, body)
+    f = _find(findings, "research_reference_match")
+    assert f.passed, f"expected pass, got failed ({f.detail})"
+    assert f.detail == (
+        "reference URL matches research URL: "
+        "https://example.com/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF"
+    )
