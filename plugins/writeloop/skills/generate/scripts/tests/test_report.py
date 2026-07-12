@@ -17,6 +17,18 @@ def test_report_contains_verdict_and_error_table():
     assert "body_length" in md and "肉付けする" in md
 
 
+def test_report_heading_contains_round_verdict_and_mode():
+    # task-14.md「mode は見出しに含める」: round / verdict / mode が
+    # 見出し行（# 行）そのものに全て含まれることを固定する。
+    d = decide([check_fail("body_length", "too short", "肉付けする", "error")], [], [],
+               round_num=1, max_retries=2, prev_failed_error_keys=None)
+    heading = render_report(d, mode="article").splitlines()[0]
+    assert heading.startswith("# ")
+    assert "round 1" in heading
+    assert "continue" in heading
+    assert "article" in heading
+
+
 def test_report_is_deterministic():
     d = decide([check_fail("body_length", "too short", "肉付けする", "error")], [], [],
                round_num=1, max_retries=2, prev_failed_error_keys=None)

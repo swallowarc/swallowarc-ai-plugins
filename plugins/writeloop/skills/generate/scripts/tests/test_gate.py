@@ -17,17 +17,18 @@ judge_common_test.go の TestJudgeFindingsToChecks（judgeFindingsToChecks）:
 helpers_test.go の TestFailedErrorCheckKeys（failedErrorCheckKeys）:
     -> test_failed_error_check_keys_dedup_and_format（重複排除・warning 除外を統合）
 
-helpers_test.go の TestEqualKeySets（equalKeySets）は decide() の内部実装として
-使うのみで公開関数ではないため、単体テストとしては移植せず decide() の verdict
-テスト（stalled 判定）で間接的に固定する:
-    "same order" / "different order" -> test_verdict_stalled_when_same_error_keys_as_prev
-    "different size" / "different keys" -> test_verdict_continue_on_first_failing_round
-      （prev=None なので stalled 判定自体が走らないケースだが、equalKeySets が
-      True になり得ない不一致ケースの代替として round_num/failed_error_keys の
-      表明で固定）
-    "both empty" -> 該当なし。全 error 通過時は decide() が passed 分岐で先に
-      抜けるため both-empty での equalKeySets 呼び出しは発生しない（Go の
-      runQualityCheckLoop も !passed を条件に含むため同様）。
+helpers_test.go の TestEqualKeySets（equalKeySets）: 5 サブテスト全件を
+_equal_key_sets（decide() 内部の private ヘルパー。直接 import する既存慣行に
+従う）の直接テストとして 1:1 移植する:
+    "same order" -> test_equal_key_sets_same_order
+    "different order" -> test_equal_key_sets_different_order
+    "different size" -> test_equal_key_sets_different_size
+    "different keys" -> test_equal_key_sets_different_keys
+    "both empty" -> test_equal_key_sets_both_empty
+      （Go は nil スライス同士。Python では空リスト同士で対応）
+さらに decide() 経由の統合ケースとして、複数キーの順序入れ替えでも stalled に
+なること（集合比較であることの End-to-End 確認）を
+test_verdict_stalled_with_reordered_multi_keys で固定する。
 
 helpers_test.go の TestFailedCheckKeys / TestIntersect:
     -> 移植対象外。failedCheckKeys（severity 無視の全不合格キー）と intersect
@@ -42,7 +43,13 @@ Go 側に無い（workflow 統合テストのみ）。本ファイルの
 test_stall_check_precedes_retry_exhaustion で Python 側に固定する。
 """
 import pytest
-from wlq.gate import GateError, convert_judge_findings, decide, failed_error_check_keys
+from wlq.gate import (
+    GateError,
+    _equal_key_sets,
+    convert_judge_findings,
+    decide,
+    failed_error_check_keys,
+)
 from wlq.model import Finding, check_fail, check_pass
 
 ASPECTS = [
@@ -88,6 +95,29 @@ def test_failed_error_check_keys_dedup_and_format():
     assert failed_error_check_keys(findings) == ["body_length/", "llm_judge/concrete_examples"]
 
 
+# helpers_test.go TestEqualKeySets の 5 サブテストを 1:1 移植。
+
+
+def test_equal_key_sets_same_order():
+    assert _equal_key_sets(["x", "y"], ["x", "y"]) is True
+
+
+def test_equal_key_sets_different_order():
+    assert _equal_key_sets(["x", "y"], ["y", "x"]) is True
+
+
+def test_equal_key_sets_different_size():
+    assert _equal_key_sets(["x"], ["x", "y"]) is False
+
+
+def test_equal_key_sets_different_keys():
+    assert _equal_key_sets(["x"], ["y"]) is False
+
+
+def test_equal_key_sets_both_empty():
+    assert _equal_key_sets([], []) is True
+
+
 def _decide(rule_findings, judge_findings, round_num=1, prev=None):
     return decide(rule_findings, judge_findings, ASPECTS,
                   round_num=round_num, max_retries=2, prev_failed_error_keys=prev)
@@ -108,6 +138,16 @@ def test_verdict_continue_on_first_failing_round():
 def test_verdict_stalled_when_same_error_keys_as_prev():
     d = _decide([check_fail("body_length", "d", "s", "error")], [],
                 round_num=2, prev=["body_length/"])
+    assert d.verdict == "stalled"
+
+
+def test_verdict_stalled_with_reordered_multi_keys():
+    # equalKeySets は集合比較（順序無視）。prev のキー順が今回の
+    # failed_error_check_keys（findings 出現順）と逆でも stalled になる。
+    d = _decide([check_fail("body_length", "d", "s", "error"),
+                 check_fail("kanji_run", "d", "s", "error")], [],
+                round_num=2, prev=["kanji_run/", "body_length/"])
+    assert d.failed_error_keys == ["body_length/", "kanji_run/"]
     assert d.verdict == "stalled"
 
 

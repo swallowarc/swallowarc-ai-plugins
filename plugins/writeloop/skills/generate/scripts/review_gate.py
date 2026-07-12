@@ -169,6 +169,15 @@ def _judge_findings_from_judge(judge: dict, path: str) -> list[dict] | None:
                 file=sys.stderr,
             )
             return None
+        # 本番 judgeOutputSchema（judge_common.go:27-）は finding オブジェクトに
+        # additionalProperties: false を課す。未知フィールドはスキーマ違反。
+        unknown = [k for k in f if k not in _JUDGE_FINDING_REQUIRED_FIELDS]
+        if unknown:
+            print(
+                f"error: judge file {path!r} findings[{i}] has unknown field(s) {unknown}",
+                file=sys.stderr,
+            )
+            return None
         string_fields = ("aspect", "severity", "location", "detail", "suggestion")
         bad_strings = [k for k in string_fields if not isinstance(f[k], str)]
         if bad_strings:

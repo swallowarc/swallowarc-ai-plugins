@@ -39,14 +39,12 @@ def _findings_table(findings: list[Finding]) -> list[str]:
 def render_report(decision: Decision, *, mode: str) -> str:
     """`decision` を決定論的な Markdown レポートに整形する。
 
-    構成: 見出し（round と verdict）/ mode / error findings 表
+    構成: 見出し1行（round / verdict / mode を全て含める）/ error findings 表
     （name/category/detail/suggestion/location、findings 配列順）/
     warning findings 表（同形式）/ 件数サマリ（total / error fail / warning fail）。
     """
     lines: list[str] = [
-        f"# writeloop review — round {decision.round} — {decision.verdict}",
-        "",
-        f"mode: {mode}",
+        f"# writeloop review — round {decision.round} — {decision.verdict} — mode: {mode}",
         "",
         f"## Error findings ({len(decision.error_findings)})",
         "",
