@@ -5,4 +5,5 @@ docs/kata/specs/
 docs/kata/plans/
 __pycache__/
 *.pyc
+.pytest_cache/
 .claude/worktrees/
