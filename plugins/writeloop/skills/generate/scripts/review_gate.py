@@ -52,7 +52,7 @@ def _read_json_file(path: str, label: str) -> dict:
     try:
         with open(path, encoding="utf-8") as f:
             text = f.read()
-    except OSError as e:
+    except (OSError, UnicodeDecodeError) as e:
         print(f"error: failed to read {label} file {path!r}: {e}", file=sys.stderr)
         sys.exit(1)
     try:
