@@ -15,6 +15,7 @@ subprocess で sys.executable 実行する（tests/test_qualitycheck_cli.py と�
 - test_cli_invalid_mode_exits_nonzero
 - test_cli_malformed_aspects_yaml_exits_nonzero
 - test_cli_malformed_rules_json_exits_nonzero
+- test_cli_missing_article_type_in_facts_exits_nonzero
 - test_cli_exit_code_is_zero_even_when_zero_aspects_selected
 """
 import json
@@ -188,6 +189,34 @@ def test_cli_malformed_rules_json_exits_nonzero(tmp_path):
     )
     assert r.returncode != 0
     assert r.stderr.startswith("error:")
+
+
+def test_cli_missing_article_type_in_facts_exits_nonzero(tmp_path):
+    # rules.json は qualitycheck.py の出力であり facts.article_type を必ず持つ。
+    # 欠落は入力データの破損なので黙って general にフォールバックせずエラーとする。
+    rules = tmp_path / "rules.json"
+    rules.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "mode": "article",
+                "findings": [],
+                "facts": {
+                    "has_fenced_block": False,
+                    "contains_triple_backtick": False,
+                    "prose_runes": 0,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    r = run_cli(
+        "--aspects-file", str(YAML_PATH), "--rules", str(rules),
+        "--mode", "article", "--round", "1", "--out", "-",
+    )
+    assert r.returncode != 0
+    assert r.stderr.startswith("error:")
+    assert "article_type" in r.stderr
 
 
 def test_cli_exit_code_is_zero_even_when_zero_aspects_selected(tmp_path):

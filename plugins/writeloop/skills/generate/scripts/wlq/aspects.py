@@ -60,6 +60,8 @@ import yaml
 
 _VALID_MODES = frozenset(("article", "document"))
 _VALID_REQUIRES = frozenset(("fenced_block", "triple_backtick", "research", "first_round"))
+# 本番 domain/article_type.go の validArticleTypes と同じ 5 値。
+_VALID_ARTICLE_TYPES = frozenset(("intro", "news", "impl", "opinion", "general"))
 
 
 @dataclasses.dataclass(frozen=True)
@@ -86,7 +88,8 @@ def load_aspects(path: str | Path) -> list[AspectDef]:
 
     schema_version は 1 のみサポートする。各観点は key / group / allow_error /
     article_types / modes / requires / instruction をすべて持つ必要がある。
-    modes / requires の値は既知の語彙（_VALID_MODES / _VALID_REQUIRES）のみ許可する。
+    article_types / modes / requires の値は既知の語彙（_VALID_ARTICLE_TYPES /
+    _VALID_MODES / _VALID_REQUIRES）のみ許可する。
     """
     with open(path, encoding="utf-8") as f:
         data = yaml.safe_load(f)
@@ -125,6 +128,9 @@ def load_aspects(path: str | Path) -> list[AspectDef]:
         modes = _require_str_list(item.get("modes", []), field="modes", key=key)
         requires = _require_str_list(item.get("requires", []), field="requires", key=key)
 
+        unknown_article_types = set(article_types) - _VALID_ARTICLE_TYPES
+        if unknown_article_types:
+            raise ValueError(f"aspect {key!r}: unknown article_types {sorted(unknown_article_types)}")
         unknown_modes = set(modes) - _VALID_MODES
         if unknown_modes:
             raise ValueError(f"aspect {key!r}: unknown modes {sorted(unknown_modes)}")

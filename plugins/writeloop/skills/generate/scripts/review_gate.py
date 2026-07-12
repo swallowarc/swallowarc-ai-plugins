@@ -73,9 +73,15 @@ def _cmd_aspects(args: argparse.Namespace) -> int:
         print(f"error: rules file {args.rules!r} is missing a 'facts' object", file=sys.stderr)
         return 1
 
-    article_type = facts.get("article_type", "general")
+    # rules.json は qualitycheck.py の出力であり facts.article_type を必ず持つ。
+    # 欠落・不正型は入力データの破損なので黙ってフォールバックせずエラーにする。
+    article_type = facts.get("article_type")
     if not isinstance(article_type, str) or not article_type:
-        article_type = "general"
+        print(
+            f"error: rules file {args.rules!r} is missing a valid 'facts.article_type' string",
+            file=sys.stderr,
+        )
+        return 1
 
     try:
         defs = load_aspects(args.aspects_file)
