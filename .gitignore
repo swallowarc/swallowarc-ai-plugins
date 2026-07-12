@@ -1,3 +1,5 @@
 /swallowarc-ai-plugins.iml
 /docs/superpowers/
 .kata/
+__pycache__/
+*.pyc
