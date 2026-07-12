@@ -83,13 +83,20 @@ pass/fail の最小ケースを book に追加した:
 
 --- 追加ケース（Go テーブルにはないが、直接呼び出し可能になったことで到達可能な分岐） ---
 
-check_tags_format の "tags key not found" と "tag contains empty value after
-normalization" は、Go のコメントで「checkFrontmatterValues で捕捉済みのはずなので
-到達しない」と明記されている防御的分岐。Task 8 では check_tags_format を fm dict を
-直接受け取る単体関数として公開するため、これらの分岐にも直接到達できる。挙動の
-実装が Go と一致することを確認するため追加した:
+check_tags_format の "tags key not found"・"tags must be a list"・"tag contains
+empty value after normalization" は、Go のコメントで「checkFrontmatterValues で
+捕捉済みのはずなので到達しない」と明記されている防御的分岐。Task 8 では
+check_tags_format を fm dict を直接受け取る単体関数として公開するため、これらの
+分岐にも直接到達できる。挙動の実装が Go と一致することを確認するため追加した:
 - test_check_tags_format_tags_key_not_found_fails
+- test_check_tags_format_tags_not_a_list_fails
 - test_check_tags_format_empty_value_after_normalization_fails
+
+check_tags_format の float タグ正規化は既知の乖離（wlq/checks_frontmatter.py の
+モジュールヘッダ docstring 参照）: Go の fmt.Sprint(1.0) は "1"、Python の str(1.0) は
+"1.0" になる。通常運用のタグは文字列のみのため実装は変更せず、Python 側の挙動を
+テストで固定する:
+- test_check_tags_format_float_tag_normalizes_via_python_str（既知乖離の挙動固定）
 
 --- task-08.md 記載の代表テスト（Go テストと 1:1 対応ではない追加確認） ---
 
@@ -146,6 +153,10 @@ def test_check_frontmatter_yaml_malformed_fails():
     assert parse_error is not None
     f = check_frontmatter_yaml(parse_error)
     assert not f.passed
+    # 既知の乖離（モジュールヘッダ参照）: detail の YAML パーサ由来の詳細文言は Go と
+    # 一致しないが、プレフィックスの構成は Go の fmt.Errorf("invalid frontmatter
+    # yaml: %w", err) に合わせてある。その構成だけを検証する。
+    assert f.detail.startswith("invalid frontmatter yaml:")
 
 
 # --- check_frontmatter_values -------------------------------------------------
@@ -265,7 +276,23 @@ def test_check_tags_format_tags_key_not_found_fails():
     assert f.detail == "tags key not found"
 
 
+def test_check_tags_format_tags_not_a_list_fails():
+    f = check_tags_format({"title": "X", "tags": "go"})
+    assert not f.passed
+    assert f.detail == "tags must be a list"
+
+
 def test_check_tags_format_empty_value_after_normalization_fails():
     f = check_tags_format({"title": "X", "tags": ["go", "   "]})
     assert not f.passed
     assert f.detail == "tag contains empty value after normalization"
+
+
+def test_check_tags_format_float_tag_normalizes_via_python_str():
+    # 既知の乖離の挙動固定（wlq/checks_frontmatter.py モジュールヘッダ参照）:
+    # Python の正規化は str(v) 基準のため float 1.0 は "1.0" になる
+    # （Go の fmt.Sprint(1.0) は "1" のため、Go では ["1.0", 1.0] は重複扱いにならない）。
+    # 通常運用のタグは文字列のみで float タグは存在しないため、実装は変更しない。
+    f = check_tags_format({"title": "X", "tags": ["1.0", 1.0]})
+    assert not f.passed
+    assert f.detail == "duplicate tag found: 1.0"

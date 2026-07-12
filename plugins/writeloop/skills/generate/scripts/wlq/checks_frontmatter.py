@@ -13,6 +13,15 @@ checkSeriesConsistency（checker_frontmatter.go:203〜）は Task 9 スコープ
     を使う。文言そのもの（YAML パーサ由来の詳細部分）は Go と一致しない。
     pass 時の detail（"frontmatter is valid yaml"）は Go と一字一句一致させている。
     正常な記事では frontmatter は valid なので、この乖離は通常運用では発現しない。
+
+既知の乖離（tags_format の float タグ正規化）:
+    check_tags_format のタグ正規化は Go の
+    `strings.ToLower(strings.TrimSpace(fmt.Sprint(v)))` を `str(v).strip().lower()` で
+    再現しているが、float タグ（例: tags: [1.0]）では Go の `fmt.Sprint(1.0)` が "1" に
+    なるのに対し Python の `str(1.0)` は "1.0" になり、正規化結果（重複判定・detail 文言）
+    が乖離する。bool / int / str タグでは実質等価。通常運用のタグは文字列のみで
+    float タグは存在しないため、実装は Python の `str(v)` のまま固定する
+    （tests/test_checks_frontmatter.py で Python 側の挙動を固定済み）。
 """
 from typing import Any
 
