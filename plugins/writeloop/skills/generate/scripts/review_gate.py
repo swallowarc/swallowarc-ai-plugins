@@ -6,7 +6,7 @@
 """writeloop レビューゲート CLI。
 
 サブコマンド:
-- aspects: rules.json（qualitycheck.py の出力）の facts と --mode/--round/--research
+- aspects: rules.json（qualitycheck.py の出力）の facts と --mode/--round/--research-present
   から LLM judge の評価観点を選定し、aspects.json を出力する
   （wlq.aspects.load_aspects / select_aspects の薄いエントリ）。
 - decide: rules.json（ルールベース findings）と judge.json（LLM judge findings）を
@@ -16,7 +16,7 @@
 
 使い方:
     review_gate.py aspects --aspects-file <judge-aspects.yaml> --rules <rules.json>
-                            --mode article|document --round <N> [--research]
+                            --mode article|document --round <N> [--research-present]
                             --out <path|->
 
     review_gate.py decide --rules <rules.json> --judge <judge.json>
@@ -111,7 +111,7 @@ def _cmd_aspects(args: argparse.Namespace) -> int:
             article_type=article_type,
             has_fenced_block=bool(facts.get("has_fenced_block", False)),
             contains_triple_backtick=bool(facts.get("contains_triple_backtick", False)),
-            research_present=args.research,
+            research_present=args.research_present,
             round_num=args.round_num,
         )
     except ValueError as e:
@@ -298,7 +298,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="review_gate.py", description="writeloop レビューゲート CLI")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    aspects_parser = sub.add_parser("aspects", help="rules.json から LLM judge 観点を選定する")
+    # allow_abbrev=False: 廃止した --research（真偽フラグ）が --research-present の
+    # 曖昧でない省略形として argparse に暗黙で受理されてしまうのを防ぐ。
+    aspects_parser = sub.add_parser(
+        "aspects", help="rules.json から LLM judge 観点を選定する", allow_abbrev=False
+    )
     aspects_parser.add_argument(
         "--aspects-file", required=True, dest="aspects_file", help="judge-aspects.yaml のパス"
     )
@@ -306,7 +310,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     aspects_parser.add_argument("--mode", required=True, choices=["article", "document"])
     aspects_parser.add_argument("--round", required=True, type=int, dest="round_num", help="レビューの回転数（1 始まり）")
     aspects_parser.add_argument(
-        "--research", action="store_true", help="リサーチ結果が存在する（research_present）"
+        "--research-present", action="store_true", dest="research_present",
+        help="リサーチ結果が存在する（research_present）。qualitycheck の --research（パス）とは別物",
     )
     aspects_parser.add_argument("--out", required=True, help="出力先パス。'-' で stdout")
 

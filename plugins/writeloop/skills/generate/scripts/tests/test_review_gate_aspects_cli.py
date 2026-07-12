@@ -92,7 +92,7 @@ def test_cli_research_flag_enables_source_fidelity_on_first_round_only(tmp_path)
 
     r1 = run_cli(
         "--aspects-file", str(YAML_PATH), "--rules", str(rules),
-        "--mode", "article", "--round", "1", "--research", "--out", "-",
+        "--mode", "article", "--round", "1", "--research-present", "--out", "-",
     )
     assert r1.returncode == 0, r1.stderr
     keys1 = [a["key"] for a in json.loads(r1.stdout)["aspects"]]
@@ -100,7 +100,7 @@ def test_cli_research_flag_enables_source_fidelity_on_first_round_only(tmp_path)
 
     r2 = run_cli(
         "--aspects-file", str(YAML_PATH), "--rules", str(rules),
-        "--mode", "article", "--round", "2", "--research", "--out", "-",
+        "--mode", "article", "--round", "2", "--research-present", "--out", "-",
     )
     assert r2.returncode == 0, r2.stderr
     keys2 = [a["key"] for a in json.loads(r2.stdout)["aspects"]]
@@ -119,7 +119,7 @@ def test_cli_document_mode_reduced_set(tmp_path):
     rules = _write_rules(tmp_path, article_type="general")
     r = run_cli(
         "--aspects-file", str(YAML_PATH), "--rules", str(rules),
-        "--mode", "document", "--round", "1", "--research", "--out", "-",
+        "--mode", "document", "--round", "1", "--research-present", "--out", "-",
     )
     assert r.returncode == 0, r.stderr
     keys = [a["key"] for a in json.loads(r.stdout)["aspects"]]
@@ -229,3 +229,13 @@ def test_cli_exit_code_is_zero_even_when_zero_aspects_selected(tmp_path):
         "--mode", "article", "--round", "1", "--out", "-",
     )
     assert r.returncode == 0, r.stderr
+
+
+def test_cli_rejects_renamed_research_flag(tmp_path):
+    """旧 --research（真偽フラグ）は廃止。argparse が exit 2 で拒否する。"""
+    rules = _write_rules(tmp_path, article_type="intro")
+    r = run_cli(
+        "--aspects-file", str(YAML_PATH), "--rules", str(rules),
+        "--mode", "article", "--round", "1", "--research", "--out", "-",
+    )
+    assert r.returncode == 2
