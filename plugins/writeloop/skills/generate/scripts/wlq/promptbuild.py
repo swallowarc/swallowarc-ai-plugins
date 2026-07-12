@@ -170,3 +170,41 @@ def plan_section(plan: PlanData) -> str:
         *([f"  - {c}" for c in plan.constraints] or ["  - なし"]),
     ]
     return "\n".join(lines) + "\n"
+
+
+def _output_format_block(plan: PlanData, now: datetime) -> str:
+    # ported from: internal/infrastructure/llm/openai.go buildUserPrompt 153-166 @ autopostd 20c740b
+    if plan.mode == "document":
+        return f'[出力形式]\n---\ntitle: "{plan.title_draft}"\n---\n(本文をここに記述)\n'
+    date = now.astimezone(_JST).strftime("%Y-%m-%dT%H:%M:%S+09:00")
+    return (
+        "[出力形式]\n---\n"
+        f'title: "{plan.title_draft}"\n'
+        'description: "<この記事固有の説明を1〜2文で>"\n'
+        f"date: {date}\n"
+        f"tags: [{', '.join(plan.tags)}]\n"
+        "draft: false\n---\n"
+        "本文は H2 (##) から始め、H1 (#) は使わない。見出しは階層を飛ばさない。\n"
+        "(本文をここに記述)\n"
+    )
+
+
+def build_writer_prompt(plan: PlanData, research: str | None, refs_dir: str, now: datetime) -> str:
+    blocks: list[str] = []
+    if plan.mode == "article":
+        blocks.append(style_guide_block(refs_dir, plan.article_type))
+    blocks.append(plan_section(plan))
+    if plan.mode == "article":
+        blocks.append(required_sections_block(refs_dir, plan.article_type))
+    if requires_references(plan):
+        blocks.append(reference_requirements_block(refs_dir, now))
+    if plan.mode == "article":
+        blocks.append(diagram_code_rules_block(refs_dir, plan.article_type))
+        if plan.article_type == "news":
+            blocks.append("[事実と見解の分離]\n" + load_reference(refs_dir, "news-fact-opinion.md"))
+    if research is not None:
+        blocks.append("[リサーチ結果]\n" + research.rstrip("\n") + "\n")
+    blocks.append(quality_rules_block(plan.mode))
+    blocks.append("[読まれやすさ]\n" + load_reference(refs_dir, "readability-guide.md"))
+    blocks.append(_output_format_block(plan, now))
+    return "\n".join(blocks)

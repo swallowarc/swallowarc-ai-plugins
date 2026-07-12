@@ -92,3 +92,67 @@ def test_reference_requirements_block_substitutes_date():
     assert block.startswith("[参考情報要件]\n")
     assert "情報確認日: 2026-07-12" in block
     assert "%s" not in block
+
+
+from datetime import datetime
+from wlq.promptbuild import _JST, build_writer_prompt
+
+FIXED_NOW = datetime(2026, 7, 12, 9, 0, 0, tzinfo=_JST)
+
+
+def _headers(prompt: str) -> list[str]:
+    import regex
+    return regex.findall(r"^\[[^\]]+\]$", prompt, regex.MULTILINE)
+
+
+def test_writer_article_research_block_order(tmp_path):
+    plan = load_plan(_write_plan(tmp_path))  # impl / research
+    prompt = build_writer_prompt(plan, "リサーチ本文", REFS_DIR, FIXED_NOW)
+    assert _headers(prompt) == [
+        "[文体ガイド（記事タイプ: impl）]", "[投稿計画]", "[必須セクション]",
+        "[参考情報要件]", "[図とコード例のルール]", "[リサーチ結果]",
+        "[品質ルール]", "[読まれやすさ]", "[出力形式]",
+    ]
+    assert "date: 2026-07-12T09:00:00+09:00" in prompt
+    assert "tags: [go, temporal]" in prompt
+
+
+def test_writer_article_basic_intro_omits_conditionals(tmp_path):
+    text = ARTICLE_PLAN.replace("article_type: impl", "article_type: intro").replace(
+        "profile: research", "profile: basic")
+    prompt = build_writer_prompt(load_plan(_write_plan(tmp_path, text)), None, REFS_DIR, FIXED_NOW)
+    hs = _headers(prompt)
+    assert "[参考情報要件]" not in hs and "[リサーチ結果]" not in hs and "[事実と見解の分離]" not in hs
+
+
+def test_writer_news_adds_fact_opinion(tmp_path):
+    text = ARTICLE_PLAN.replace("article_type: impl", "article_type: news").replace(
+        "profile: research", "profile: basic")
+    hs = _headers(build_writer_prompt(load_plan(_write_plan(tmp_path, text)), None, REFS_DIR, FIXED_NOW))
+    assert "[参考情報要件]" in hs and "[事実と見解の分離]" in hs  # news は basic でも参考情報要件が入る
+
+
+DOCUMENT_PLAN = """---
+mode: document
+profile: research
+created: 2026-07-12
+title_draft: "MCP サーバーの認可モデル調査"
+slug: mcp-auth
+questions: ["OAuth 対応の現状", "ローカル実行時の権限境界"]
+depth: "一次情報まで当たる"
+---
+"""
+
+
+def test_writer_document_reduced_blocks(tmp_path):
+    prompt = build_writer_prompt(load_plan(_write_plan(tmp_path, DOCUMENT_PLAN)), "調査", REFS_DIR, FIXED_NOW)
+    assert _headers(prompt) == [
+        "[投稿計画]", "[参考情報要件]", "[リサーチ結果]", "[品質ルール]", "[読まれやすさ]", "[出力形式]",
+    ]
+    assert "必須 Frontmatter キー" not in prompt
+
+
+def test_writer_golden_article_impl_research(tmp_path):
+    prompt = build_writer_prompt(load_plan(_write_plan(tmp_path)), "リサーチ本文", REFS_DIR, FIXED_NOW)
+    golden = (Path(__file__).parent / "golden" / "writer-article-impl-research.md").read_text(encoding="utf-8")
+    assert prompt == golden
