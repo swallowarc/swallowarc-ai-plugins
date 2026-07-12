@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 import regex
 
-from wlq.checks_structure import NEWS_LABELS
+from wlq.checks_structure import NEWS_LABELS, required_section_names
 
 REFS_DIR = Path(__file__).resolve().parents[2] / "references"
 FILES = [
@@ -23,7 +23,7 @@ def test_reference_has_ported_header(name):
     "name,headings",
     [
         ("style-guide.md", ["## common", "## intro", "## news", "## impl", "## opinion", "## general"]),
-        ("diagram-code-rules.md", ["## common", "## impl"]),
+        ("diagram-code-rules.md", ["## impl", "## default"]),
         ("required-sections.md", ["## common", "## intro-integration", "## news"]),
     ],
 )
@@ -38,3 +38,10 @@ def test_required_sections_placeholder_and_news_labels():
     assert "{sections}" in text
     for label in NEWS_LABELS:
         assert label in text, f"news ラベル {label} がチェッカー定数と一致しない"
+
+
+def test_required_section_names_by_type():
+    for t in ("intro", "impl", "opinion", "news"):
+        assert required_section_names(t) == ("はじめに", "結論・要点", "次にやること")
+    assert required_section_names("general") == ("結論・要点",)
+    assert required_section_names("unknown") == ("結論・要点",)
