@@ -192,9 +192,14 @@ def _aspects_list_from_aspects_file(aspects_data: dict, path: str) -> list[dict]
         print(f"error: aspects file {path!r} is missing an 'aspects' array", file=sys.stderr)
         return None
     for i, a in enumerate(aspects):
-        if not isinstance(a, dict) or "key" not in a or "allow_error" not in a:
+        if (
+            not isinstance(a, dict)
+            or not isinstance(a.get("key"), str)
+            or not isinstance(a.get("allow_error"), bool)
+        ):
             print(
-                f"error: aspects file {path!r} aspects[{i}] is missing 'key'/'allow_error'",
+                f"error: aspects file {path!r} aspects[{i}] must have a string 'key' "
+                "and a bool 'allow_error'",
                 file=sys.stderr,
             )
             return None
