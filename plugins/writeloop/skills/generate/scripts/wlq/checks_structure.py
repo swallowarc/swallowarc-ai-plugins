@@ -119,3 +119,11 @@ def check_required_sections(article_type: str, content: str) -> Finding:
             _SEVERITY_ERROR,
         )
     return check_pass(_NAME_REQUIRED_SECTIONS, "all required sections present", _SEVERITY_ERROR)
+
+
+# build_prompt の [必須セクション] 描画と資産テストが使う公開アクセサ。
+NEWS_LABELS = _NEWS_LABELS
+
+
+def required_section_names(article_type: str) -> tuple[str, ...]:
+    return tuple(sec.canonical for sec in _required_sections_for(article_type))
