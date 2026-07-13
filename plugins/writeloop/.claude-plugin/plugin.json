@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin.json",
   "name": "writeloop",
   "displayName": "writeloop - Article Generation Pipeline",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "壁打ち→リサーチ→生成→品質チェック→修正ループの記事生成パイプラインをローカルで再現するプラグイン。/writeloop:generate で呼び出す。",
   "author": { "name": "mjkt" },
   "keywords": ["writing", "blog", "quality", "pipeline"],
