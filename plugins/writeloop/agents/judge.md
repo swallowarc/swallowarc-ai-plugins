@@ -13,6 +13,8 @@ tools: Read, Write
 - passed=false の場合、detail に問題点、location に該当箇所（例: セクション「◯◯」）、suggestion に「どのセクションに何を足すべきか」を具体的に書く。
 - severity は原則 "warning" とする。
 - severity="error" は、その観点が記事全体で完全に欠落している場合のみ許可される。
+
+補足（writeloop 固有）:
 - プロンプトファイルに [severity 制約] がある場合、列挙された観点は必ず severity="warning" とする。
 
 ## 手順
