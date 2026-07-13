@@ -15,6 +15,11 @@
       "name": "kata",
       "source": "./plugins/kata",
       "description": "開発プロセスに規律を与えるスキル集。設計（design）→プラン（plan）→実行（execute）のワークフローと、tdd・debug・verify-done 等の横断ゲートを提供する。/kata:<skill-name> で呼び出す。"
+    },
+    {
+      "name": "writeloop",
+      "source": "./plugins/writeloop",
+      "description": "壁打ち→リサーチ→生成→品質チェック→修正ループの記事生成パイプラインをローカルで再現するプラグイン。article/document の2モード。/writeloop:generate で呼び出す。"
     }
   ]
 }
