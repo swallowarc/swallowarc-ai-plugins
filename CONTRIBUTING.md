@@ -10,16 +10,16 @@
 ├── .claude-plugin/
 │   └── marketplace.json              # マーケットプレイス定義（配布プラグイン一覧）
 └── plugins/
-    ├── swallowarc/                   # 汎用スキル集約プラグイン（呼び出し名前空間 = swallowarc）
+    ├── shoroku/                      # 書籍要約プラグイン（呼び出し名前空間 = shoroku）
     ├── kata/                         # 開発プロセス規律プラグイン（呼び出し名前空間 = kata）
     ├── genko/                        # 原稿生成パイプラインプラグイン（呼び出し名前空間 = genko）
     └── jp-writing/                   # 日本語ライティング規範プラグイン（呼び出し名前空間 = jp-writing）
 ```
 
-新しい単発スキルは `swallowarc` プラグインに追加していく（開発プロセス系は `kata`）。
+新しいスキルは主題が合う既存プラグインに追加する（書籍要約系は `shoroku`、開発プロセス系は `kata`）。
+合うプラグインがなければ、主題が名前に表れる新しいプラグインを作る。
 
-スキルの呼び出し名 `/<prefix>:<skill>` の `<prefix>` は、マーケットプレイス名ではなく**プラグイン名（plugin.json の `name`）**で決まる。
-`/swallowarc:...` で呼ぶため、プラグイン名は `swallowarc` にしている（マーケットプレイス名 `swallowarc-ai-plugins` とは別物）。
+スキルの呼び出し名 `/<prefix>:<skill>` の `<prefix>` は、マーケットプレイス名ではなく**プラグイン名（plugin.json の `name`）**で決まる（マーケットプレイス名 `swallowarc-ai-plugins` とは別物）。
 
 ## 新しいスキルの追加手順
 
@@ -36,6 +36,14 @@
 - `plugins/<plugin-name>/.claude-plugin/plugin.json` と `plugins/<plugin-name>/README.md` を作成する
 - `.claude-plugin/marketplace.json` の `plugins` にエントリを追加する
 - ルート README.md の配布プラグイン表に 1 行追記する
+
+## プラグインの改名と削除
+
+プラグイン名は利用者の設定（`enabledPlugins`）に入る安定識別子なので、改名は破壊的変更である。
+改名または削除をしたら、`.claude-plugin/marketplace.json` の `renames` に「旧名→新名」（削除は `null`）を追記する。
+Claude Code v2.1.193 以降の利用者は、起動時に設定が自動で書き換わり移行される。
+`renames` は履歴なので追記のみとし、既存エントリの書き換えや削除はしない（改名の連鎖は追える）。
+編集後は `claude plugin validate .` で循環や宙ぶらりんの参照がないことを検証する。
 
 ## バージョン更新ルール（必須）
 

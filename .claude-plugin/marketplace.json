@@ -7,9 +7,9 @@
   "description": "swallowarc 個人用 AI エージェント向けプラグイン配布マーケットプレイス",
   "plugins": [
     {
-      "name": "swallowarc",
-      "source": "./plugins/swallowarc",
-      "description": "swallowarc 個人用スキルを束ねるプラグイン。/swallowarc:<skill-name> でスキルを呼び出す。収録：book-summary-html（本の要点まとめHTML生成）、infographic-prompt（手書き風説明画像のプロンプト生成）。"
+      "name": "shoroku",
+      "source": "./plugins/shoroku",
+      "description": "書籍の要約作成に特化したプラグイン。/shoroku:<skill-name> でスキルを呼び出す。収録：book-summary-html（本の要点まとめHTMLサイト生成）、infographic-prompt（要点の手書き風説明画像のプロンプト生成）。旧称 swallowarc。"
     },
     {
       "name": "kata",
@@ -26,5 +26,9 @@
       "source": "./plugins/jp-writing",
       "description": "日本語ライティング規範のスキル集（k16shikano 氏公開の gist を収録）。技術文書の文章規範（japanese-tech-writing）と緩急設計の規範（cognitive-rhythm-writing）を /jp-writing:<skill-name> で呼び出す。"
     }
-  ]
+  ],
+  "renames": {
+    "swallowarc": "shoroku",
+    "writeloop": "genko"
+  }
 }

@@ -9,7 +9,7 @@ Claude Code の[プラグインマーケットプレイス](https://code.claude.
 
 | プラグイン | 説明 | ドキュメント |
 | --- | --- | --- |
-| `swallowarc` | 個人用の汎用スキル集。本の要点まとめサイトの生成と、手描き風インフォグラフィックのプロンプト生成を収録する | [plugins/swallowarc](plugins/swallowarc/README.md) |
+| `shoroku` | 書籍の要約作成に特化したスキル集。本の要点まとめサイトの生成と、手描き風説明画像のプロンプト生成を収録する（旧称 swallowarc） | [plugins/shoroku](plugins/shoroku/README.md) |
 | `kata` | 開発プロセスに規律を与えるスキル集。設計→プラン→実行のワークフローと、TDD やデバッグなどの横断ゲートを提供する | [plugins/kata](plugins/kata/README.md) |
 | `genko` | 原稿生成パイプライン。壁打ちからリサーチ、生成、品質チェック、修正ループまでを工程化する（旧称 writeloop） | [plugins/genko](plugins/genko/README.md) |
 | `jp-writing` | 日本語ライティング規範のスキル集。k16shikano 氏公開の文章規範を収録する | [plugins/jp-writing](plugins/jp-writing/README.md) |
@@ -27,7 +27,7 @@ Claude Code の[プラグインマーケットプレイス](https://code.claude.
 必要なプラグインだけをインストールする。
 
 ```
-/plugin install swallowarc@swallowarc-ai-plugins
+/plugin install shoroku@swallowarc-ai-plugins
 /plugin install kata@swallowarc-ai-plugins
 /plugin install genko@swallowarc-ai-plugins
 /plugin install jp-writing@swallowarc-ai-plugins

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "name": "shoroku",
+  "displayName": "shoroku（抄録・旧 swallowarc）",
+  "version": "0.3.0",
+  "description": "書籍の要約作成に特化したプラグイン。本の要点まとめ HTML サイトの生成（book-summary-html）と、要点を手描き風説明画像にするプロンプト生成（infographic-prompt）を /shoroku:<skill-name> で呼び出す。旧称 swallowarc。",
+  "author": {
+    "name": "mjkt"
+  },
+  "keywords": [
+    "shoroku",
+    "book",
+    "summary",
+    "reading-notes",
+    "infographic"
+  ],
+  "license": "MIT"
+}
