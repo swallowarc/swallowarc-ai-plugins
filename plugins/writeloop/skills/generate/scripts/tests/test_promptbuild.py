@@ -115,6 +115,7 @@ def test_writer_article_research_block_order(tmp_path):
     ]
     assert "date: 2026-07-12T09:00:00+09:00" in prompt
     assert 'tags: ["go", "temporal"]' in prompt
+    assert "- 定義・数値・固有の主張は、リサーチ結果に含まれる原典の逐語引用と整合させること。" in prompt
 
 
 def test_writer_article_basic_intro_omits_conditionals(tmp_path):

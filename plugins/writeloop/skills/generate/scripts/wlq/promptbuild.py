@@ -23,6 +23,12 @@ _REQUIRED_DOCUMENT_FIELDS = ("title_draft", "slug", "questions")
 # ported from: internal/infrastructure/llm/prompt_sections.go buildStyleGuideSuffix @ autopostd 20c740b
 _STYLE_GUIDE_INTRO = "Persona の口調・キャラクター性は維持したまま、以下の文体原則に従ってください。"
 
+# ported from: internal/infrastructure/llm/openai.go writeResearchContentSection:133-134 @ autopostd 20c740b
+_RESEARCH_INTEGRITY_NOTES = (
+    "- 定義・数値・固有の主張は、リサーチ結果に含まれる原典の逐語引用と整合させること。\n"
+    "- リサーチ結果を要約する際に、原典の定義の範囲を狭めたり広げたりしないこと。\n"
+)
+
 
 @dataclass(frozen=True)
 class PlanData:
@@ -188,7 +194,7 @@ def _output_format_block(plan: PlanData, now: datetime) -> str:
         'description: "<この記事固有の説明を1〜2文で>"\n'
         f"date: {date}\n"
         f"tags: [{_format_tags(plan.tags)}]\n"
-        "draft: false\n---\n"
+        "draft: false\n---\n\n"
         "本文は H2 (##) から始め、H1 (#) は使わない。見出しは階層を飛ばさない。\n"
         "(本文をここに記述)\n"
     )
@@ -279,7 +285,7 @@ def build_writer_prompt(plan: PlanData, research: str | None, refs_dir: str, now
         if plan.article_type == "news":
             blocks.append("[事実と見解の分離]\n" + load_reference(refs_dir, "news-fact-opinion.md"))
     if research is not None:
-        blocks.append("[リサーチ結果]\n" + research.rstrip("\n") + "\n")
+        blocks.append("[リサーチ結果]\n" + research.rstrip("\n") + "\n" + _RESEARCH_INTEGRITY_NOTES)
     blocks.append(quality_rules_block(plan.mode))
     blocks.append("[読まれやすさ]\n" + load_reference(refs_dir, "readability-guide.md"))
     blocks.append(_output_format_block(plan, now))
