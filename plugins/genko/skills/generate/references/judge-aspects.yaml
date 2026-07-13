@@ -1,6 +1,6 @@
 schema_version: 1
 # ported from: internal/domain/judge_aspects_*.go @ autopostd 20c740b
-# writeloop 独自の局所適応:
+# genko 独自の局所適応:
 #   - style_conformance: StyleGuideFor(t) の埋め込みの代わりに、同ディレクトリの
 #     style-guide.md を参照させる一文を末尾に置く。{article_type} は select_aspects が
 #     実値に置換する。

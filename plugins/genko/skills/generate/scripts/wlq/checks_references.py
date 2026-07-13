@@ -11,7 +11,7 @@ research_reference_match）の移植。
 対象判定（skip=pass の条件）について: 本番 `checkReferences` は
 `domain.RequiresReferences(plan)`（generation_profile=="research" または
 article_type=="news"）が false の Plan では 4 件とも skip=pass にする
-（checker_references.go:131-150）。writeloop には Go の Plan 型・
+（checker_references.go:131-150）。genko には Go の Plan 型・
 generation_profile という概念が存在せず（wlq 全体で generation_profile を
 扱うモジュールは無い。qualitycheck.py の run_checks も article_type と
 research_content のみを扱う設計）、この移植では

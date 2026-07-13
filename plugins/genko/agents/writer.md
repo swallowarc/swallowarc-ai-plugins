@@ -1,6 +1,6 @@
 ---
 name: writer
-description: writeloop:generate の本文生成工程専用エージェント。組立済みの writer-prompt.md を読み、記事本文だけを draft ファイルに書く。単独での自動起用は想定しない。
+description: genko:generate の本文生成工程専用エージェント。組立済みの writer-prompt.md を読み、記事本文だけを draft ファイルに書く。単独での自動起用は想定しない。
 tools: Read, Write
 ---
 

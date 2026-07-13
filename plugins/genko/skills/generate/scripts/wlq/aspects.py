@@ -12,7 +12,7 @@
 本文・リサーチ結果から観点関数を順に呼び出して観点リストを組み立てる。各観点関数
 （practicalValueAspects / diagramCodeAspects / styleAspects / readabilityAspects /
 metaphorAspects / sourceFidelityAspects）は Go のコードとして「article_type ごとに
-何を返すか」を実装している。writeloop ではこれを機械可読な YAML
+何を返すか」を実装している。genko ではこれを機械可読な YAML
 （judge-aspects.yaml）に持たせ、各観点の適用条件（article_types / modes / requires）
 を宣言的なデータとして表現し、`select_aspects` が単一の選定ロジックで解釈する。
 
@@ -35,7 +35,7 @@ metaphorAspects / sourceFidelityAspects）は Go のコードとして「article
 ## Go との差分（意図的な設計判断）
 
 - style_conformance: 本番は instruction 末尾に `StyleGuideFor(t)`（記事タイプ別
-  文体ガイド本文）を埋め込むが、writeloop はプラグイン単体で完結させるため
+  文体ガイド本文）を埋め込むが、genko はプラグイン単体で完結させるため
   文体ガイド本文を持たない。代わりに同ディレクトリの style-guide.md（後続プラン
   で作成）を参照させる一文を末尾に置く。
 - fact_opinion_separation: 本番は 1 つの関数内で article_type に応じて instruction
@@ -47,7 +47,7 @@ metaphorAspects / sourceFidelityAspects）は Go のコードとして「article
   `researchContent == nil` のみで判定するが、usecase 層（judge_quality.go）が
   再 judge（fix 後の 2 round 目以降）で `excludeResearch=true` を渡すことで
   researchContent を意図的に nil にし、同じ効果（2 round 目以降は source_fidelity
-  を評価しない）を得ている。writeloop にはラウンドという概念を明示的に持たせる
+  を評価しない）を得ている。genko にはラウンドという概念を明示的に持たせる
   ため、この副作用を `requires: [research, first_round]` という明示的な条件として
   表現する。
 """

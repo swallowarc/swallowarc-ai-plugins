@@ -1,4 +1,4 @@
-# ported from: (該当する Go ファイルなし。writeloop 独自の決定論的レポート整形)
+# ported from: (該当する Go ファイルなし。genko 独自の決定論的レポート整形)
 #              参考: internal/infrastructure/temporal/workflow/draft_generation.go の
 #              NotifyAutoFixStalled / NotifyAutoFixRetriesExhausted 通知内容
 #              （failedFindings/failedWarningFindings を渡す点）と役割は対応するが、
@@ -44,7 +44,7 @@ def render_report(decision: Decision, *, mode: str) -> str:
     warning findings 表（同形式）/ 件数サマリ（total / error fail / warning fail）。
     """
     lines: list[str] = [
-        f"# writeloop review — round {decision.round} — {decision.verdict} — mode: {mode}",
+        f"# genko review — round {decision.round} — {decision.verdict} — mode: {mode}",
         "",
         f"## Error findings ({len(decision.error_findings)})",
         "",

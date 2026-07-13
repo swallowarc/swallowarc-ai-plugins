@@ -1,10 +1,10 @@
-name: writeloop-tests
+name: genko-tests
 on:
   push:
     branches: [main]
-    paths: ["plugins/writeloop/**", ".github/workflows/writeloop-tests.yml"]
+    paths: ["plugins/genko/**", ".github/workflows/genko-tests.yml"]
   pull_request:
-    paths: ["plugins/writeloop/**", ".github/workflows/writeloop-tests.yml"]
+    paths: ["plugins/genko/**", ".github/workflows/genko-tests.yml"]
 jobs:
   pytest:
     runs-on: ubuntu-latest
@@ -17,4 +17,4 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install pyyaml regex pytest
-      - run: python -m pytest plugins/writeloop/skills/generate/scripts/tests -q
+      - run: python -m pytest plugins/genko/skills/generate/scripts/tests -q

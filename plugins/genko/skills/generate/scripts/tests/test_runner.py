@@ -30,7 +30,7 @@ test_body_length_is_wired_to_plan_constraints
 test_check_includes_reference_checks
     -> TestCheck_IncludesReferenceChecks（Task 11 申し送り。checker_references_test.go:356。
        Go は refPlan(t, "intro", "research") で generation_profile="research" を使うが、
-       writeloop に profile 概念が無いため research_content を渡すことで代替する
+       genko に profile 概念が無いため research_content を渡すことで代替する
        設計判断は Task 11 の check_references と統一。詳細は
        wlq/checks_references.py のモジュール docstring 参照）
 
@@ -356,7 +356,7 @@ def test_body_length_is_wired_to_plan_constraints():
 def test_check_includes_reference_checks():
     # Go: checker_references_test.go:356 TestCheck_IncludesReferenceChecks。
     # Go は refPlan(t, "intro", "research")（generation_profile="research"）を使うが、
-    # writeloop には profile 概念が無いため research_content の有無で代替する
+    # genko には profile 概念が無いため research_content の有無で代替する
     # （Task 11 の設計判断と統一。wlq/checks_references.py 参照）。
     draft = (
         "---\ntitle: X\n---\n"

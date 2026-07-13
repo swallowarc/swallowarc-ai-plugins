@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["pyyaml", "regex"]
 # ///
-"""writeloop レビューゲート CLI。
+"""genko レビューゲート CLI。
 
 サブコマンド:
 - aspects: rules.json（qualitycheck.py の出力）の facts と --mode/--round/--research-present
@@ -295,7 +295,7 @@ def _cmd_decide(args: argparse.Namespace) -> int:
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="review_gate.py", description="writeloop レビューゲート CLI")
+    parser = argparse.ArgumentParser(prog="review_gate.py", description="genko レビューゲート CLI")
     sub = parser.add_subparsers(dest="command", required=True)
 
     # allow_abbrev=False: 廃止した --research（真偽フラグ）が --research-present の

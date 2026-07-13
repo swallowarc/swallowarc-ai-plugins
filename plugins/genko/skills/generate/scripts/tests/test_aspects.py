@@ -65,7 +65,7 @@ judge_aspects_style_test.go:
     TestStyleAspects_StyleConformanceEmbedsStyleGuide
         -> 適応版に置換: test_style_conformance_local_adaptation_references_style_guide_md
            （task-13.md 記載の局所適応仕様: 本番は StyleGuideFor(t) を埋め込むが、
-           writeloop は style-guide.md 参照文 + {article_type} 置換に置き換える）
+           genko は style-guide.md 参照文 + {article_type} 置換に置き換える）
     TestStyleAspects_FactOpinionEmphasisForNewsAndOpinion
         -> test_fact_opinion_separation_emphasis_for_news_and_opinion
     TestJudgeAspectsFor_IncludesStyleAspects
@@ -86,7 +86,7 @@ judge_aspects_source_fidelity_test.go:
         -> test_source_fidelity_def_allow_error_and_presence
     TestJudgeAspectsFor_IncludesSourceFidelityWhenResearchPresent
         -> test_source_fidelity_only_on_first_round_with_research（task-13.md 記載を
-           そのまま採用。round_num==1 条件は Go に無い writeloop 独自の requires
+           そのまま採用。round_num==1 条件は Go に無い genko 独自の requires
            拡張であり、Go に対応する単一テストは無い）
 
 task-13.md 記載の代表テスト（そのまま採用。以下 5 件）:
@@ -419,7 +419,7 @@ _GO_SOURCE_FIDELITY = (
 )
 
 # style_conformance: Go 原文の t.String() 埋め込み直前まで（styleConformanceInstruction の
-# 先頭 4 文字列リテラルの結合）はそのまま一致することを要求し、末尾は writeloop の局所適応
+# 先頭 4 文字列リテラルの結合）はそのまま一致することを要求し、末尾は genko の局所適応
 # 文言に置き換わっていることを別途検証する（test_style_conformance_local_adaptation_...）。
 _GO_STYLE_CONFORMANCE_PREFIX = (
     "本文が以下の記事タイプ別文体ガイドに適合しているかを評価してください。"

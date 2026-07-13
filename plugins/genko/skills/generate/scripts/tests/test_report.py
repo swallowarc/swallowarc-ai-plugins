@@ -1,6 +1,6 @@
 """wlq/report.py（render_report）のテスト。task-14.md 記載の完全仕様テスト。
 
-render_report は本番 Go 側に対応物を持たない（writeloop 独自の決定論的整形物。
+render_report は本番 Go 側に対応物を持たない（genko 独自の決定論的整形物。
 本番はレポートを持たず Slack 通知文言を組み立てるのみ）。決定論性（同一入力
 から常に同一出力）そのものが要求仕様であるため、それを直接固定する。
 """

@@ -1,7 +1,7 @@
 # ported from: internal/infrastructure/quality/checker_frontmatter.go:203 (series==nil 分岐),
 #              internal/infrastructure/quality/checker_series.go:21 (series==nil 分岐)
 #              @ autopostd 20c740b
-# writeloop は series 非対応（spec スコープ外）。findings の形を本番と揃えるため
+# genko は series 非対応（spec スコープ外）。findings の形を本番と揃えるため
 # nil 分岐の skip=pass 定数のみを出力する。
 from .model import Finding
 

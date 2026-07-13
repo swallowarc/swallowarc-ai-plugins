@@ -20,5 +20,5 @@ def test_agent_frontmatter(name, tools):
     assert meta["name"] == name
     assert meta["tools"] == tools
     assert "model" not in meta, "model はセッション継承（spec）— 指定しない"
-    assert "writeloop:generate" in meta["description"]
+    assert "genko:generate" in meta["description"]
     assert body.strip(), "本文（system prompt 相当）が空"

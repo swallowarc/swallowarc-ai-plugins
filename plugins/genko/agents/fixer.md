@@ -1,6 +1,6 @@
 ---
 name: fixer
-description: writeloop:generate の修正工程専用エージェント。組立済みの fix-prompt.md を読み、指摘を修正した記事全体を次の draft ファイルに書く。単独での自動起用は想定しない。
+description: genko:generate の修正工程専用エージェント。組立済みの fix-prompt.md を読み、指摘を修正した記事全体を次の draft ファイルに書く。単独での自動起用は想定しない。
 tools: Read, Write
 ---
 

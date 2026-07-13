@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["pyyaml", "regex"]
 # ///
-"""writeloop 品質チェック CLI。
+"""genko 品質チェック CLI。
 
 wlq.runner.run_checks に draft/plan/research の内容を渡し、結果を rules.json
 スキーマの JSON として出力する薄いエントリ。順序保証・モード分岐・facts 算出は
@@ -71,7 +71,7 @@ def _resolve_plan(plan_path: str | None) -> tuple[str | None, list[str]]:
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="qualitycheck.py", description="writeloop 品質チェック CLI"
+        prog="qualitycheck.py", description="genko 品質チェック CLI"
     )
     parser.add_argument("--draft", required=True, help="draft markdown ファイルのパス")
     parser.add_argument("--mode", required=True, choices=["article", "document"])

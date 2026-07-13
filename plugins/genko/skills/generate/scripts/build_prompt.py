@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["pyyaml", "regex"]
 # ///
-"""writeloop プロンプト組立 CLI（writer / judge / fixer）。"""
+"""genko プロンプト組立 CLI（writer / judge / fixer）。"""
 import argparse
 import json
 import os
@@ -114,7 +114,7 @@ def _add_common(p: argparse.ArgumentParser) -> None:
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="build_prompt.py", description="writeloop プロンプト組立 CLI")
+    parser = argparse.ArgumentParser(prog="build_prompt.py", description="genko プロンプト組立 CLI")
     sub = parser.add_subparsers(dest="command", required=True)
     writer_p = sub.add_parser("writer", help="writer 用プロンプトを組み立てる")
     _add_common(writer_p)

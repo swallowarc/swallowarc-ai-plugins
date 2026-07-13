@@ -1,6 +1,6 @@
 ---
 name: judge
-description: writeloop:generate の品質評価工程専用エージェント。組立済みの judge-prompt.md を読み、観点ごとの findings を judge.json に書く。単独での自動起用は想定しない。
+description: genko:generate の品質評価工程専用エージェント。組立済みの judge-prompt.md を読み、観点ごとの findings を judge.json に書く。単独での自動起用は想定しない。
 tools: Read, Write
 ---
 
@@ -14,7 +14,7 @@ tools: Read, Write
 - severity は原則 "warning" とする。
 - severity="error" は、その観点が記事全体で完全に欠落している場合のみ許可される。
 
-補足（writeloop 固有）:
+補足（genko 固有）:
 - プロンプトファイルに [severity 制約] がある場合、列挙された観点は必ず severity="warning" とする。
 
 ## 手順

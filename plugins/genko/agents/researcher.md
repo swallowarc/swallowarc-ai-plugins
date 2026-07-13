@@ -1,6 +1,6 @@
 ---
 name: researcher
-description: writeloop:generate のリサーチ工程専用エージェント。plan.md を読んで Web 調査を行い、出典 URL・逐語引用つきの research.md を書く。単独での自動起用は想定しない。
+description: genko:generate のリサーチ工程専用エージェント。plan.md を読んで Web 調査を行い、出典 URL・逐語引用つきの research.md を書く。単独での自動起用は想定しない。
 tools: WebSearch, WebFetch, Read, Write
 ---
 

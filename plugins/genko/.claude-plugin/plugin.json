@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "name": "genko",
+  "displayName": "genko - Manuscript Generation Pipeline",
+  "version": "0.2.0",
+  "description": "壁打ち→リサーチ→生成→品質チェック→修正ループで原稿（ブログ記事または調査ドキュメント）を生成するパイプラインプラグイン。/genko:generate で呼び出す。旧称 writeloop。",
+  "author": { "name": "mjkt" },
+  "keywords": ["writing", "blog", "quality", "pipeline"],
+  "license": "MIT"
+}
