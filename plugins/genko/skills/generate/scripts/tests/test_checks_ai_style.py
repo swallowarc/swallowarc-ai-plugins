@@ -565,3 +565,36 @@ def test_bold_colon_list_inside_code_fence_is_ignored():
 def test_cliche_phrases_total_over_limit_fails():
     prose = "これが重要です。あれがポイントです。それが鍵です。言い換えると全部です。"
     assert not check_cliche_phrases(prose).passed
+
+
+# --- genko 独自拡張（jp-writing 由来の追加語彙。Go に対応なし） ---
+
+
+def test_cliche_phrases_counts_jp_writing_additions():
+    # jp-writing:japanese-tech-writing「LLM っぽい表現の禁止」由来の追加語彙が
+    # 既定リストで数えられること（4 出現 > 上限 3 で fail）。
+    prose = (
+        "これは設計の問題に他なりません。"
+        "重要なのは境界の置き方です。"
+        "このテーマを深掘りします。"
+        "多角的に検証しました。"
+    )
+    c = check_cliche_phrases(prose)
+    assert c.passed is False
+    for want in ["に他なりません=1", "重要なのは=1", "深掘り=1", "多角的=1"]:
+        assert want in c.detail
+
+
+def test_cliche_phrases_additions_do_not_overlap_existing_phrases():
+    # 「重要なのは〜が重要です」のような併用でも、既存フレーズと追加フレーズが
+    # 部分文字列の包含関係を持たず、それぞれ独立に 1 回ずつ数えられること
+    # （check_cliche_phrases は素朴な count のため、包含があると二重計上になる）。
+    prose = "重要なのは速度です。可読性が重要です。"
+    c = check_cliche_phrases(prose)
+    assert c.passed is True  # 合計 2 は上限 3 以内
+    from wlq import config
+
+    for a in config.CLICHE_PHRASES:
+        for b in config.CLICHE_PHRASES:
+            if a != b:
+                assert a not in b, f"{a!r} is a substring of {b!r}"

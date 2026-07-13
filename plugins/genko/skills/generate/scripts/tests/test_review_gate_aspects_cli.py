@@ -123,7 +123,12 @@ def test_cli_document_mode_reduced_set(tmp_path):
     )
     assert r.returncode == 0, r.stderr
     keys = [a["key"] for a in json.loads(r.stdout)["aspects"]]
-    assert keys == ["lead_quality", "heading_informativeness", "metaphor_discipline", "source_fidelity"]
+    # 縮退セット + genko 独自の meta_commentary / redundancy（tests/test_aspects.py の
+    # test_document_mode_reduced_set と同じ期待値）。
+    assert keys == [
+        "lead_quality", "heading_informativeness", "metaphor_discipline",
+        "meta_commentary", "redundancy", "source_fidelity",
+    ]
 
 
 def test_cli_writes_output_file(tmp_path):

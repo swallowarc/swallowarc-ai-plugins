@@ -20,7 +20,9 @@ Go の `Check` をそのまま踏襲する:
 3. `check_frontmatter_yaml(err)`
 4. パース成功時のみ（Go の `if fmErr == nil` ブロック）: frontmatter 系・構造系・
    code/mermaid・body_length・可読性 4 件・AI 文体系 9 件・AI 文体構造系 4 件を
-   Go の登録順のまま実行する。`check_series_consistency()` はこのブロック内
+   Go の登録順のまま実行する。この区間の末尾に genko 独自の
+   `check_progress_narration_freq`（Go に対応なし。checks_narration.py 参照）を
+   1 件追加する。`check_series_consistency()` はこのブロック内
    （series==nil 分岐の定数のみ。Go の `checkSeriesConsistency(series, fm)` が
    同じ `if` 内にあることに対応）。
 5. `check_required_sections(article_type, content)`（if ブロックの外。パース失敗時も実行）
@@ -70,6 +72,7 @@ from .checks_ai_style_structure import (
     check_reason_template_freq,
 )
 from .checks_code import check_code_kind_label, check_code_language_tag, check_mermaid_context
+from .checks_narration import check_progress_narration_freq
 from .checks_frontmatter import (
     check_description_quality,
     check_forbidden_words,
@@ -138,6 +141,10 @@ def _run_prose_checks(prose: str, body: str) -> list[Finding]:
     findings.append(check_hard_line_breaks(prose))
     findings.append(check_first_person_freq(prose))
     findings.append(check_reason_template_freq(prose))
+
+    # genko 独自追加（Go の Check() に対応なし）: 進行実況の頻度チェック。
+    # 詳細は wlq/checks_narration.py のモジュール docstring 参照。
+    findings.append(check_progress_narration_freq(prose))
 
     return findings
 

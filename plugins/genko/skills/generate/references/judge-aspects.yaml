@@ -7,6 +7,11 @@ schema_version: 1
 #   - fact_opinion_separation: Go は article_type 条件で instruction 文字列を分岐するが、
 #     ここでは同一 key・article_types のみ異なる 2 エントリに分ける（news/opinion 版と
 #     intro/impl 版）。select_aspects は article_type に応じてどちらか一方のみを選ぶ。
+# genko 独自の追加観点（Go 移植ではない）:
+#   - meta_commentary / redundancy（group: writing_norms）: jp-writing プラグイン収録の
+#     k16shikano 氏の文章規範（cognitive-rhythm-writing「緩みと駄文の見分け方」と
+#     japanese-tech-writing「冗長の排除」。原典 gist は Unlicense）を judge の
+#     評価観点に適応したもの。
 aspects:
   - key: concrete_examples
     group: practical_value
@@ -196,6 +201,22 @@ aspects:
     requires: []
     instruction: |-
       記事中の比喩・メタファー表現を確認する。(1) 1 つの文に複数の比喩が混在していないか、(2) 比喩と述語の意味が噛み合っているか（例: 『観測する入口』は入口が観測する主体になっており不整合）、(3) 記事全体で複数系統の比喩が乱立していないか（1 系統までが目安）。違反箇所は location で特定し、suggestion には比喩を外した直接的な表現か、既出の比喩系統への統一を提案する。
+  - key: meta_commentary
+    group: writing_norms
+    allow_error: false
+    article_types: [intro, impl, opinion, news, general]
+    modes: [article, document]
+    requires: []
+    instruction: |-
+      進行実況・メタ文: 各文が記事の対象（技術・事実・手順・判断）について新しい情報を伝えているか、それとも記事自身の進行・構成だけを述べているかを評価してください。「ここまで見てきたように」「次のセクションでは〜を見ていきます」「本記事では〜を説明してきました」のような、記事の見え方や執筆の予定だけを述べて対象の新情報がない文（進行実況）を指摘してください。ただし次のものは指摘対象にしないでください: (1) 読者の具体的な誤読・反論を引用して退ける文、(2) 導入・結びに置いた問いの提示とその回収、(3) 例や場面の枠を開閉する文（「〜としよう」等）。該当文は location で特定し、suggestion には削除するか、対象側の情報を伝える文への書き換え案を書いてください。
+  - key: redundancy
+    group: writing_norms
+    allow_error: false
+    article_types: [intro, impl, opinion, news, general]
+    modes: [article, document]
+    requires: []
+    instruction: |-
+      冗長の排除: 同じ主張・説明の重複がないかを評価してください。指摘対象: (1) 同じ主張を言い換えて繰り返す段落、(2) 隣接するセクションが同じ内容を別の角度で述べていて役割が重複している箇所、(3) 例やコードを示した直後にその内容をそのまま要約し直す文、(4) 読者が自力で補える中間段階の説明。導入での要点先出しと結論セクションの対応のような、設計上必要な再掲は重複と見なさないでください。指摘は location で特定し、suggestion には削る側と残す側（またはどのセクションに吸収するか）を具体的に書いてください。
   - key: source_fidelity
     group: source_fidelity
     allow_error: true

@@ -18,9 +18,9 @@ from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parent.parent
 
-# checker.go:264-326 の Check() 登録順そのもの（tests/test_runner.py の
-# ARTICLE_ORDER と同一。CLI 経由の配線を独立に検証するため、テストファイルの
-# 自己完結性を優先してここでも定義する）。
+# checker.go:264-326 の Check() 登録順 + genko 独自追加の progress_narration_freq
+# （tests/test_runner.py の ARTICLE_ORDER と同一。CLI 経由の配線を独立に検証するため、
+# テストファイルの自己完結性を優先してここでも定義する）。
 ARTICLE_ORDER = [
     "forbidden_words",
     "frontmatter_yaml",
@@ -52,6 +52,7 @@ ARTICLE_ORDER = [
     "hard_line_breaks",
     "first_person_freq",
     "reason_template_freq",
+    "progress_narration_freq",
     "required_sections",
     "references_section",
     "reference_entries",

@@ -65,7 +65,8 @@ from wlq.frontmatter import parse_frontmatter
 from wlq.prose import count_prose_runes, extract_prose
 from wlq.runner import run_checks
 
-# checker.go:264-326 の Check() 登録順そのもの。
+# checker.go:264-326 の Check() 登録順 + genko 独自追加の progress_narration_freq
+# （reason_template_freq の直後。Go に対応なし。wlq/checks_narration.py 参照）。
 ARTICLE_ORDER = [
     "forbidden_words",
     "frontmatter_yaml",
@@ -97,6 +98,7 @@ ARTICLE_ORDER = [
     "hard_line_breaks",
     "first_person_freq",
     "reason_template_freq",
+    "progress_narration_freq",
     "required_sections",
     "references_section",
     "reference_entries",
@@ -135,6 +137,7 @@ FRONTMATTER_DEPENDENT_NAMES = {
     "hard_line_breaks",
     "first_person_freq",
     "reason_template_freq",
+    "progress_narration_freq",
 }
 
 # document モードの相対順（article モードの「frontmatter パース成功時」ブロックのうち
@@ -158,6 +161,7 @@ DOCUMENT_ORDER = [
     "hard_line_breaks",
     "first_person_freq",
     "reason_template_freq",
+    "progress_narration_freq",
 ]
 
 REFERENCE_NAMES = [
