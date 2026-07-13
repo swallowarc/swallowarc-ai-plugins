@@ -43,12 +43,12 @@ $RUN_DIR/
 
 質問は一度に全項目をまとめて聞かず、少しずつ聞く。
 
-- **article**: テーマ → 記事タイプ（intro/impl/opinion/news/general）→ 想定読者（役割・技術レベル・現状の課題・記事に求めるもの等、複数の観点を聞き取り 1〜3 文にまとめる）→ ゴール → スコープ（扱う話題 / 扱わない話題）→ 制約 → タグ → slug → リサーチ要否。
+- **article**: テーマ → 記事タイプ（intro/impl/opinion/news/general）→ 想定読者（**役割と経験・現在の状況と課題・既に知っていること・読後の最初の行動**の4観点を織り込んだ1〜3文に育てる）→ ゴール → スコープ（扱う話題 / 扱わない話題）→ 制約 → タグ → slug → リサーチ要否。
 - **document**: テーマ → 知りたいこと（questions）→ 深さ（depth）→ リサーチ要否 → slug。
 
 リサーチ要否の判断基準は「ネット調査が記事の本体になるか」。要否に迷う場合はユーザーに確認する。
 
-**最終確認は AskUserQuestion の選択肢の `preview`（または `description`）に plan.md の全文を埋め込んで提示する。** ターン途中の通常テキストで plan 内容を提示し、それを確認前提にした手順は書かない（AskUserQuestion 直前のターン途中テキストが表示されない既知の表示 issue のため）。
+**最終確認は AskUserQuestion の選択肢の `preview`（または `description`）に plan.md の全文を埋め込んで提示する。** ターン途中の通常テキストで plan 内容を提示し、それを確認前提にした手順は書かない（AskUserQuestion 直前のターン途中テキストが表示されない既知の表示 issue のため）。plan 全文が preview に収まらない場合は、plan.md を先に保存し、ターンの最後のテキストとしてファイルパスと要旨を提示してターンを終え、ユーザーの返信で承認を得る（ダイアログとテキスト提示を同一ターンに混在させない）。
 
 確定後、`$RUN_DIR/plan.md` を次の frontmatter 書式で書く（`load_plan` が検証する契約。リスト型フィールドは必ず YAML リストで書く。スカラーで書くと `ValueError` になる）:
 
@@ -78,9 +78,11 @@ depth: "深さの指定"                          # document のみ
 
 `## 壁打ちメモ` は mode を問わず必ず書く。`## リサーチ観点` は `profile: research` のときのみ書く（researcher.md が本文からこの節を読む契約）。
 
+plan.md を確定したら3章の工程シーケンスに進む。
+
 ## 3. 工程シーケンス
 
-`$MODE` は plan.md frontmatter の `mode`。以下、$RUN_DIR 配下の相対パスで表記する。
+`$MODE` は plan.md frontmatter の `mode`。以下、$RUN_DIR 配下の相対パスで表記する。実行時は必ず `$RUN_DIR/` を前置した絶対パスに展開して使う（スクリプト実行・サブエージェントへの受け渡しとも）。サブエージェントの作業ディレクトリが $RUN_DIR である保証はないため、相対パスのまま渡してはならない。
 
 1. `profile: research` のときのみ: researcher エージェントに `plan.md` のパスと `research.md` の出力先パスだけを渡して起動する。
 
