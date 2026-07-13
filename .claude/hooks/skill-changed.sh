@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # PostToolUse フック: スキルの SKILL.md を Write/Edit したら、
-# README.md の最新化と plugin.json のバージョン更新をリマインドする。
+# 該当プラグインの README.md の最新化と plugin.json のバージョン更新をリマインドする。
 #
 # 入力: stdin に Claude Code から PostToolUse の JSON が渡る
 #       （.tool_input.file_path に編集対象パスが入る）
@@ -17,7 +17,7 @@ case "$file_path" in
     jq -n --arg p "$plugin_name" '{
       hookSpecificOutput: {
         hookEventName: "PostToolUse",
-        additionalContext: "スキル(SKILL.md)を変更しました。作業完了前に必ず: 1) README.md の収録スキル表を実態に合わせて最新化する、2) plugins/\($p)/.claude-plugin/plugin.json の version を更新する（新規スキル追加=マイナー、既存スキルの更新のみ=パッチ をインクリメント。バージョンを上げないと利用側 /plugin marketplace update に取り込まれません）。"
+        additionalContext: "スキル(SKILL.md)を変更しました。作業完了前に必ず: 1) plugins/\($p)/README.md の収録スキルの説明を実態に合わせて最新化する、2) plugins/\($p)/.claude-plugin/plugin.json の version を更新する（新規スキル追加=マイナー、既存スキルの更新のみ=パッチ をインクリメント。バージョンを上げないと利用側 /plugin marketplace update に取り込まれません）。"
       }
     }'
     ;;
