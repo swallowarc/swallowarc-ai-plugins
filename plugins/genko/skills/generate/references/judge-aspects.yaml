@@ -8,7 +8,7 @@ schema_version: 1
 #     ここでは同一 key・article_types のみ異なる 2 エントリに分ける（news/opinion 版と
 #     intro/impl 版）。select_aspects は article_type に応じてどちらか一方のみを選ぶ。
 # genko 独自の追加観点（Go 移植ではない）:
-#   - meta_commentary / redundancy（group: writing_norms）: jp-writing プラグイン収録の
+#   - meta_commentary / redundancy（group: writing_norms）: buntai プラグイン収録の
 #     k16shikano 氏の文章規範（cognitive-rhythm-writing「緩みと駄文の見分け方」と
 #     japanese-tech-writing「冗長の排除」。原典 gist は Unlicense）を judge の
 #     評価観点に適応したもの。

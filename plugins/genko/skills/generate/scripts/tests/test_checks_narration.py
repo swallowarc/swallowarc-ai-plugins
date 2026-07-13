@@ -1,6 +1,6 @@
 """checks_narration.py（genko 独自。対応する Go 移植元テストは無い）のテスト。
 
-check_progress_narration_freq は jp-writing:cognitive-rhythm-writing の
+check_progress_narration_freq は buntai:cognitive-rhythm-writing の
 「文書を更新する文（駄文）」のうち定型化できる進行実況を頻度制限する
 （詳細は wlq/checks_narration.py のモジュール docstring 参照）。
 

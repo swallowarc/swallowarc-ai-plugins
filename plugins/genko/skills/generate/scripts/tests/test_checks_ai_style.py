@@ -567,11 +567,11 @@ def test_cliche_phrases_total_over_limit_fails():
     assert not check_cliche_phrases(prose).passed
 
 
-# --- genko 独自拡張（jp-writing 由来の追加語彙。Go に対応なし） ---
+# --- genko 独自拡張（buntai 由来の追加語彙。Go に対応なし） ---
 
 
 def test_cliche_phrases_counts_jp_writing_additions():
-    # jp-writing:japanese-tech-writing「LLM っぽい表現の禁止」由来の追加語彙が
+    # buntai:japanese-tech-writing「LLM っぽい表現の禁止」由来の追加語彙が
     # 既定リストで数えられること（4 出現 > 上限 3 で fail）。
     prose = (
         "これは設計の問題に他なりません。"

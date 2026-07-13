@@ -22,9 +22,9 @@
       "description": "壁打ち→リサーチ→生成→品質チェック→修正ループで原稿（ブログ記事または調査ドキュメント）を生成するパイプライン。/genko:generate で呼び出す。旧称 writeloop。"
     },
     {
-      "name": "jp-writing",
-      "source": "./plugins/jp-writing",
-      "description": "日本語ライティング規範のスキル集（k16shikano 氏公開の gist を収録）。技術文書の文章規範（japanese-tech-writing）と緩急設計の規範（cognitive-rhythm-writing）を /jp-writing:<skill-name> で呼び出す。"
+      "name": "buntai",
+      "source": "./plugins/buntai",
+      "description": "日本語の文体規範のスキル集（k16shikano 氏公開の gist を収録）。技術文書の文章規範（japanese-tech-writing）と緩急設計の規範（cognitive-rhythm-writing）を /buntai:<skill-name> で呼び出す。"
     }
   ],
   "renames": {

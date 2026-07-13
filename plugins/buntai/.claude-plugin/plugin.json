@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "name": "buntai",
+  "displayName": "buntai（文体）- Japanese Writing Norms",
+  "version": "0.2.0",
+  "description": "日本語の文体規範のスキル集。技術文書の文章規範（japanese-tech-writing）と、緩急を認知モードの切替として設計する規範（cognitive-rhythm-writing）を /buntai:<skill-name> で提供する。k16shikano 氏公開の gist の収録。",
+  "author": {
+    "name": "mjkt"
+  },
+  "license": "Unlicense",
+  "keywords": [
+    "buntai",
+    "writing",
+    "japanese",
+    "tech-writing",
+    "style-guide",
+    "rhythm"
+  ]
+}

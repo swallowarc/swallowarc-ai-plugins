@@ -1,7 +1,7 @@
 # genko 独自チェック（autopostd に対応する移植元は無い）。
 """進行実況（メタ文）の頻度チェック。
 
-jp-writing:cognitive-rhythm-writing の「緩みと駄文の見分け方」が定義する
+buntai:cognitive-rhythm-writing の「緩みと駄文の見分け方」が定義する
 「文書を更新する文」（記事自身の進行・構成だけを述べ、対象の新情報がない文）のうち、
 定型パターンで検出できる進行実況（「ここまで見てきたように」「次のセクションでは〜を
 見ていきます」等）を頻度制限する（原典: k16shikano 氏 gist、Unlicense）。
