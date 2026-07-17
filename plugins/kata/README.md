@@ -26,6 +26,7 @@
 | `request-review` | requesting-code-review | spec とプランへの適合性のコードレビュー依頼 |
 | `finish` | finishing-a-development-branch | 完了後のマージ、PR 作成、クリーンアップの構造化 |
 | `parallel` | dispatching-parallel-agents | プランなしの独立タスクの並列サブエージェント分配 |
+| `quick` | —（独自） | 小型タスクのライトレーン。明示呼び出し（`/kata:quick`）限定で自動起用は禁止。tdd と verify-done の最小ゲートで完結し、小型でないと判明したら design / debug へ強制切替する |
 | `using-kata` | using-superpowers | 入口。タスク開始前のスキル該当チェックを義務付けるディスパッチャー |
 
 基本フローは `design` → `plan` → `execute` → `finish`。
