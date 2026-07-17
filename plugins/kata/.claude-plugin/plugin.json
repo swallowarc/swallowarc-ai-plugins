@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin.json",
   "name": "kata",
   "displayName": "kata - Disciplined Development Skills",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "開発プロセスに規律を与えるスキル集。design→plan→execute のワークフローと tdd・debug・verify-done 等の横断ゲートを /kata:<skill-name> で提供する。",
   "author": {
     "name": "mjkt"
