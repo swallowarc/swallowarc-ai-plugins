@@ -121,6 +121,7 @@ plan 側ルール:
 - Produces:
   ```typescript
   calculateShippingFee(weightKg: number): ShippingResult
+  class InvalidWeightError extends Error
   ```
 
 **Depends on:**
