@@ -1,6 +1,6 @@
 # implementer サブエージェント プロンプトテンプレート
 
-`kata:execute` のサブエージェント駆動モードで implementer を dispatch する際に使う。Agent ツール（`general-purpose`）の `prompt` に、`{...}` をすべて埋めて渡す。プレースホルダを残したまま dispatch しない。モデルは dispatch 側で明示する（省略するとセッションの最も高価なモデルを継承する）。
+`kata:execute` のサブエージェント駆動モードで implementer を dispatch する際に使う。Agent ツール（`general-purpose`）の `prompt` に、`{...}` をすべて埋めて渡す。プレースホルダを残したまま dispatch しない。モデルは dispatch 側で `kata:execute` の「モデル選択」に従って決める（転記的タスクのみ安価な階級を明示し、それ以外は省略＝セッション継承）。
 
 ```
 あなたは Task N（<タスク名>）の実装担当である。
