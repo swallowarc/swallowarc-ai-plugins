@@ -73,16 +73,15 @@ NEEDS_CONTEXT で報告する。コントローラーが文脈を足すか、よ
 報告全文を返信に含める（コントローラーが報告書ファイルへ転記する）。
 
 返信は次だけを 15 行以内で返す（詳細は報告書に置く）:
-- Status: DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
+- Status: DONE | DONE_WITH_CONCERNS（完了したが正しさに疑義）|
+  BLOCKED（完了不能）| NEEDS_CONTEXT（未提供の情報が要る）
 - 作成したコミット（短い SHA + 件名）
 - テスト結果 1 行（例: 14/14 passing, 出力クリーン）
 - 懸念があれば
 - 報告書ファイルのパス
 
 BLOCKED / NEEDS_CONTEXT のときは、具体的に何が要るかを返信本文にも書く
-（コントローラーが直接それに動く）。DONE_WITH_CONCERNS は完了したが正しさに
-疑義があるとき、BLOCKED は完了できないとき、NEEDS_CONTEXT は未提供の情報が
-要るとき。確信のない成果物を黙って出さない。
+（コントローラーが直接それに動く）。確信のない成果物を黙って出さない。
 ```
 
 **プレースホルダ一覧**
