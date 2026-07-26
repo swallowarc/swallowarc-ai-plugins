@@ -40,7 +40,7 @@
 1. **基本の CLAUDE.md 方式（コード実行ゼロ）**：CLAUDE.md に 1 行追記する。
 
    ```
-   タスク開始前に kata:using-kata スキルの指示に従うこと。
+   タスク開始前に kata:using-kata スキルを起動し、その指示に従う。
    ```
 
 2. **任意の SessionStart フック方式（発動の強制力が高い）**：kata プラグインはフックを同梱しない。
@@ -54,7 +54,7 @@
            "hooks": [
              {
                "type": "command",
-               "command": "echo 'タスク開始前に kata:using-kata スキルの指示に従うこと。'"
+               "command": "echo 'タスク開始前に kata:using-kata スキルを起動し、その指示に従う。'"
              }
            ]
          }
