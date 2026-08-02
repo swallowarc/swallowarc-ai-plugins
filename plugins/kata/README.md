@@ -22,7 +22,7 @@
 | `execute` | executing-plans + subagent-driven-development + using-git-worktrees | プランの実行。worktree 分離と実行モード（自走／サブエージェント駆動〔直列・wave 並列〕）を内包 |
 | `tdd` | test-driven-development | RED→GREEN→REFACTOR の強制 |
 | `debug` | systematic-debugging | 4 フェーズの根本原因調査。修正提案前の必須ゲート |
-| `verify-done` | verification-before-completion | 完了宣言前の検証実行を義務化 |
+| `verify-done` | verification-before-completion | 完了宣言前の検証実行を義務化。証拠が揃ったあとの過剰な再検証も禁じる |
 | `request-review` | requesting-code-review | spec とプランへの適合性のコードレビュー依頼 |
 | `finish` | finishing-a-development-branch | 完了後のマージ、PR 作成、クリーンアップの構造化 |
 | `parallel` | dispatching-parallel-agents | プランなしの独立タスクの並列サブエージェント分配 |
