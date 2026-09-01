@@ -1,7 +1,7 @@
 # buntai
 
 日本語の文体規範のスキル集。
-k16shikano 氏（[@k16shikano](https://github.com/k16shikano)）が gist で公開している 2 つの執筆規範と、AI 臭除去の独自規範 1 つを収録したプラグイン。
+k16shikano 氏（[@k16shikano](https://github.com/k16shikano)）が gist で公開している 2 つの執筆規範と、AI 臭除去の独自規範、それらを束ねる執筆エントリポイントを収録したプラグイン。
 
 ## インストール
 
@@ -43,6 +43,17 @@ Edit（最小限の編集で書き直す）、Detect（書き直さず指摘す�
 
 ```
 /buntai:japanese-anti-slop
+```
+
+### write
+
+新規執筆のエントリポイント。
+文章の種類に応じて上記 3 規範を選んで読み込み、執筆から AI 臭点検までを 1 回の依頼で行う。
+技術記事なら japanese-tech-writing（＋読み物なら cognitive-rhythm-writing）で執筆し、常に japanese-anti-slop の機械的点検を経て納品する。
+自身は規範を持たない薄いディスパッチャで、既存文章の推敲・指摘には使わない（その場合は各スキルを直接使う）。
+
+```
+/buntai:write HTTP キャッシュの仕組みについて中級開発者向けの解説記事を書いて
 ```
 
 ## 出典
