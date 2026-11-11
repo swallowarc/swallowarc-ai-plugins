@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "name": "bash-meter",
+  "displayName": "bash-meter - Bash Timing in the Transcript",
+  "version": "0.1.0",
+  "description": "Bash の実行時間と失敗をトランスクリプトに表示する mod。まとめ行の下に件数・合計時間・最長のコマンドを出し、失敗したコマンドは終了コード付きで赤く表示する。",
+  "author": {
+    "name": "mjkt"
+  },
+  "keywords": [
+    "mod",
+    "bash",
+    "timing",
+    "transcript",
+    "ui"
+  ],
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}
