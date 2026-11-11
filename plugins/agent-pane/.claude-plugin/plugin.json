@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin.json",
   "name": "agent-pane",
   "displayName": "agent-pane - Subagent Status Pane",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "セッション内のサブエージェントの状況を一覧するペインを追加する mod。状態、経過時間、ツール回数、コンテキストサイズ、モデル、実行中の作業内容、完了時の報告の冒頭を表示する。/agent-pane で開閉する。",
   "author": {
     "name": "mjkt"
