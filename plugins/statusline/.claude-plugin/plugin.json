@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "name": "statusline",
+  "displayName": "statusline - Status Line Script Installer",
+  "version": "0.1.0",
+  "description": "Claude Code のステータスライン用スクリプトと、その導入スキル。ディレクトリ、git ブランチ、モデル、コンテキスト使用率、費用、レート制限を 1 行に表示する。/statusline:install で導入する。",
+  "author": {
+    "name": "mjkt"
+  },
+  "keywords": [
+    "statusline",
+    "context",
+    "cost",
+    "rate-limit",
+    "ui"
+  ],
+  "license": "MIT"
+}
