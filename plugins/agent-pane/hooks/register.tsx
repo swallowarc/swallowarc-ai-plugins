@@ -7,13 +7,15 @@ const PANE = 'agents'
 const TITLE = 'Agents'
 const KEPT = 50
 const ACTIVITY_CHARS = 160
-const REPORT_CHARS = 400
-const REPORT_ROWS = 2
+const REPORT_CHARS = 800
+const REPORT_ROWS = 4
+const RECENT = 3
+const FILES_KEPT = 30
 
 // Change the tag when a row's fields change: it declines what an earlier
 // version stored, which outlives a reload.
 const agents = atom({ plugin: 'agent-pane', key: 'agents' } as const, [], {
-  shape: 'agents-2',
+  shape: 'agents-3',
 })
 // The clock the pane draws elapsed times from, ticked while an agent runs.
 const now = atom({ plugin: 'agent-pane', key: 'now' } as const, 0)
@@ -110,6 +112,49 @@ const describe = (tool: string, input: Record<string, unknown>): string => {
   return tool
 }
 
+// The tools that write a file, and the input field that names it.
+const WRITERS: Record<string, string> = {
+  Edit: 'file_path',
+  MultiEdit: 'file_path',
+  Write: 'file_path',
+  NotebookEdit: 'notebook_path',
+}
+
+const written = (tool: string, input: Record<string, unknown>): string | null => {
+  const field = WRITERS[tool]
+  const value = field === undefined ? undefined : input[field]
+
+  return typeof value === 'string' && value !== '' ? value : null
+}
+
+const baseName = (path: string): string => path.split('/').pop() ?? path
+
+// `3 files · app.ts, index.ts, util.ts`, latest first.
+const filesLine = (files: string[]): string =>
+  `${files.length} ${files.length === 1 ? 'file' : 'files'} · ${[...files]
+    .reverse()
+    .map(baseName)
+    .join(', ')}`
+
+// The model's window when the agent runs on the main loop's model, the one
+// model whose window the engine tells: null for any other.
+const windowOf = async (
+  $: EngineInterface,
+  model: string,
+): Promise<number | null> => {
+  try {
+    if ((await $.session.model()) !== model) {
+      return null
+    }
+
+    const { window } = (await $.session.usage()).context
+
+    return window > 0 ? window : null
+  } catch {
+    return null
+  }
+}
+
 let ticker: { cancel: () => void } | null = null
 
 const patch = (
@@ -183,9 +228,11 @@ export const register: Register = on => {
           startedAt: at,
           endedAt: null,
           tools: 0,
-          activity: null,
+          recent: [],
+          files: [],
           report: null,
           contextTokens: 0,
+          contextWindow: await windowOf($, spawned.model),
         }
         await update($, agents, list =>
           [...list.filter(one => one.id !== row.id), row].slice(-KEPT),
@@ -248,14 +295,17 @@ export const register: Register = on => {
 
     if (agentId !== undefined) {
       try {
-        const activity = describe(
-          String(e.tool),
-          e as unknown as Record<string, unknown>,
-        )
+        const input = e as unknown as Record<string, unknown>
+        const activity = describe(String(e.tool), input)
+        const file = written(String(e.tool), input)
         await patch($, agentId, row => ({
           ...row,
           tools: row.tools + 1,
-          activity,
+          recent: [...row.recent, activity].slice(-RECENT),
+          files:
+            file === null || row.files.includes(file)
+              ? row.files
+              : [...row.files, file].slice(-FILES_KEPT),
         }))
       } catch {
         // The count misses one call.
@@ -276,7 +326,7 @@ export const register: Register = on => {
           ...row,
           status: e.reason === 'answer' ? 'done' : 'failed',
           endedAt: at,
-          activity: null,
+          recent: [],
           report: report === '' ? `(${e.reason})` : report,
         }))
       } catch {
@@ -303,26 +353,27 @@ export const register: Register = on => {
 
     // Fills the body's rows: one for the summary, one kept for `n more`.
     const room = Math.max(4, e.props.scroll.bodyRows) - 2
-    const shown: { row: AgentRow; detail: string | null }[] = []
+    const shown: { row: AgentRow; report: string | null }[] = []
     let used = 0
 
     for (const row of ordered) {
-      const detail =
-        row.status === 'running'
-          ? row.activity === null
-            ? null
-            : fit(row.activity, detailColumns)
-          : row.report === null
-            ? null
-            : fit(row.report, detailColumns * REPORT_ROWS - 1)
+      const isRunning = row.status === 'running'
+      const report =
+        isRunning || row.report === null
+          ? null
+          : fit(row.report, detailColumns * REPORT_ROWS - 1)
+      // A running agent takes a row per recent call; an ended one its report.
       const height =
-        2 + (detail === null ? 0 : rowsOf(detail, detailColumns))
+        2 +
+        (isRunning ? row.recent.length : 0) +
+        (report === null ? 0 : rowsOf(report, detailColumns)) +
+        (row.files.length > 0 ? 1 : 0)
 
       if (used + height > room && shown.length > 0) {
         break
       }
 
-      shown.push({ row, detail })
+      shown.push({ row, report })
       used += height
     }
 
@@ -332,7 +383,7 @@ export const register: Register = on => {
           {running.length} running · {finished.length} finished
         </Text>
         {list.length === 0 && <Text dimColor>No subagents yet.</Text>}
-        {shown.map(({ row, detail }) => {
+        {shown.map(({ row, report }) => {
           const mark = MARKS[row.status]
           const span =
             (row.endedAt ?? Math.max(at, row.startedAt)) - row.startedAt
@@ -347,27 +398,41 @@ export const register: Register = on => {
                 {'  '}
                 {elapsed(span)} · {row.tools} tools
                 {row.contextTokens > 0
-                  ? ` · ctx ${compact(row.contextTokens)}`
+                  ? ` · ctx ${compact(row.contextTokens)}${
+                      row.contextWindow === null
+                        ? ''
+                        : ` (${Math.round((row.contextTokens / row.contextWindow) * 100)}%)`
+                    }`
                   : ''}
                 {' · '}
                 {shortModel(row.model)}
               </Text>
-              {detail !== null && (
-                <Box flexDirection="row">
-                  <Text dimColor>
+              {row.status === 'running' &&
+                row.recent.map((call, index) => (
+                  <Text dimColor wrap="truncate-end">
                     {'  '}
-                    {row.status === 'running' ? '▸ ' : '⎿ '}
+                    {index === row.recent.length - 1 ? '▸ ' : '· '}
+                    {call}
                   </Text>
+                ))}
+              {report !== null && (
+                <Box flexDirection="row">
+                  <Text dimColor>{'  ⎿ '}</Text>
                   <Box flexDirection="column" width={detailColumns}>
                     <Text
                       wrap="wrap"
                       color={row.status === 'failed' ? 'error' : undefined}
-                      dimColor={row.status === 'running'}
                     >
-                      {detail}
+                      {report}
                     </Text>
                   </Box>
                 </Box>
+              )}
+              {row.files.length > 0 && (
+                <Text dimColor wrap="truncate-end">
+                  {'  ✎ '}
+                  {filesLine(row.files)}
+                </Text>
               )}
             </Box>
           )
