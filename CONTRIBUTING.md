@@ -12,8 +12,15 @@
 └── plugins/
     ├── shoroku/                      # 書籍要約プラグイン（呼び出し名前空間 = shoroku）
     ├── kata/                         # 開発プロセス規律プラグイン（呼び出し名前空間 = kata）
-    └── buntai/                       # 日本語文体規範プラグイン（呼び出し名前空間 = buntai）
+    ├── buntai/                       # 日本語文体規範プラグイン（呼び出し名前空間 = buntai）
+    ├── bash-meter/                   # Bash の実行時間を表示する mod（スキルなし）
+    ├── agent-pane/                   # サブエージェントの状況ペインを追加する mod（スキルなし）
+    └── statusline/                   # ステータスライン用スクリプトと導入スキル（呼び出し名前空間 = statusline）
 ```
+
+`bash-meter` と `agent-pane` は mod である。
+スキルではなく `hooks/register.tsx`（hooks モジュール）と `types/index.d.ts`（状態の型定義）からなり、`hooks/hooks.json` の `modules` で読み込まれる。
+mod を変更したら `claude plugin validate plugins/<plugin-name>` で検証し、スキルと同じく `plugin.json` の `version` を上げる。
 
 新しいスキルは主題が合う既存プラグインに追加する（書籍要約系は `shoroku`、開発プロセス系は `kata`）。
 合うプラグインがなければ、主題が名前に表れる新しいプラグインを作る。

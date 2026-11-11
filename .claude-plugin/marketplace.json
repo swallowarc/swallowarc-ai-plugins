@@ -20,6 +20,21 @@
       "name": "buntai",
       "source": "./plugins/buntai",
       "description": "日本語の文体規範のスキル集。技術文書の文章規範（japanese-tech-writing）と緩急設計の規範（cognitive-rhythm-writing。いずれも k16shikano 氏公開の gist を収録）、AI 臭除去の規範（japanese-anti-slop）、それらを束ねる執筆エントリポイント（write）を /buntai:<skill-name> で呼び出す。"
+    },
+    {
+      "name": "bash-meter",
+      "source": "./plugins/bash-meter",
+      "description": "Bash の実行時間と失敗をトランスクリプトに表示する mod。まとめ行の下に件数・合計時間・最長のコマンドを出し、失敗は終了コード付きで赤く表示する。"
+    },
+    {
+      "name": "agent-pane",
+      "source": "./plugins/agent-pane",
+      "description": "サブエージェントの状況を一覧するペインを追加する mod。状態、経過時間、ツール回数、コンテキストサイズ、作業内容、報告の冒頭を表示する。/agent-pane で開閉する。"
+    },
+    {
+      "name": "statusline",
+      "source": "./plugins/statusline",
+      "description": "ステータスライン用スクリプトとその導入スキル。ディレクトリ、git ブランチ、モデル、コンテキスト使用率、費用、レート制限を 1 行に表示する。/statusline:install で導入する。"
     }
   ],
   "renames": {

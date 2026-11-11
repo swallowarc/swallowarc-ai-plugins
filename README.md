@@ -12,6 +12,9 @@ Claude Code の[プラグインマーケットプレイス](https://code.claude.
 | `shoroku` | 書籍の要約作成に特化したスキル集。本の要点まとめサイトの生成と、手描き風説明画像のプロンプト生成を収録する（旧称 swallowarc） | [plugins/shoroku](plugins/shoroku/README.md) |
 | `kata` | 開発プロセスに規律を与えるスキル集。設計→プラン→実行のワークフローと、TDD やデバッグなどの横断ゲートを提供する | [plugins/kata](plugins/kata/README.md) |
 | `buntai` | 日本語の文体規範のスキル集。k16shikano 氏公開の文章規範を収録する | [plugins/buntai](plugins/buntai/README.md) |
+| `bash-meter` | Bash の実行時間と失敗をトランスクリプトに表示する mod | [plugins/bash-meter](plugins/bash-meter/README.md) |
+| `agent-pane` | サブエージェントの状況を一覧するペインを追加する mod | [plugins/agent-pane](plugins/agent-pane/README.md) |
+| `statusline` | ステータスライン用スクリプトとその導入スキル。コンテキスト使用率、費用、レート制限を表示する | [plugins/statusline](plugins/statusline/README.md) |
 
 ## インストール
 
@@ -29,9 +32,14 @@ Claude Code の[プラグインマーケットプレイス](https://code.claude.
 /plugin install shoroku@swallowarc-ai-plugins
 /plugin install kata@swallowarc-ai-plugins
 /plugin install buntai@swallowarc-ai-plugins
+/plugin install bash-meter@swallowarc-ai-plugins
+/plugin install agent-pane@swallowarc-ai-plugins
+/plugin install statusline@swallowarc-ai-plugins
 ```
 
 インストール後、収録スキルは `/<プラグイン名>:<スキル名>` で呼び出せる（例：`/kata:design`、`/shoroku:book-summary-html`）。
+`bash-meter` と `agent-pane` はスキルを持たない mod（Claude Code の表示を変える hooks モジュール）で、インストールするとそのまま有効になる。
+`statusline` は、インストール後に `/statusline:install` を実行して導入する。
 
 ## 更新と削除
 
