@@ -168,20 +168,20 @@ export const register: Register = on => {
 
     if (asked === '') {
       return {
-        text: `yosooi: ${await read($, paletteName)}（選べる配色: ${PALETTE_NAMES.join(', ')}, off）`,
+        text: `配色: ${await read($, paletteName)}（選べる配色: ${PALETTE_NAMES.join(', ')}, off）`,
       }
     }
 
     if (!isPaletteName(asked)) {
       return {
-        text: `yosooi: 「${asked}」という配色はない。${PALETTE_NAMES.join(', ')}, off から選ぶ。`,
+        text: `「${asked}」という配色はない。${PALETTE_NAMES.join(', ')}, off から選ぶ。`,
       }
     }
 
     await update($, paletteName, () => asked)
     await $.store.set(STORE_KEY, asked)
 
-    return { text: `yosooi: ${asked}` }
+    return { text: `配色: ${asked}` }
   })
 
   on('ui.render', { component: 'UserMessage' }, async ($, e, next) => {
