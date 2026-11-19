@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "name": "yosooi",
+  "displayName": "yosooi - Transcript Restyling",
+  "version": "0.1.0",
+  "description": "ターミナルのトランスクリプトを装い直す mod。発言の見出し・ツール行・スピナー・ターン区切りをグラデーションのチップと罫線で描き、/yosooi で配色を切り替える。",
+  "author": {
+    "name": "mjkt"
+  },
+  "keywords": ["mod", "theme", "transcript", "ui"],
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}
