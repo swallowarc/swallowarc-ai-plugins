@@ -27,11 +27,6 @@
       "description": "Bash の実行時間と失敗をトランスクリプトに表示する mod。まとめ行の下に件数・合計時間・最長のコマンドを出し、失敗は終了コード付きで赤く表示する。"
     },
     {
-      "name": "agent-pane",
-      "source": "./plugins/agent-pane",
-      "description": "サブエージェントの状況を一覧するペインを追加する mod。状態、経過時間、ツール回数、コンテキストサイズ、作業内容、報告の冒頭を表示する。/agent-pane で開閉する。"
-    },
-    {
       "name": "yosooi",
       "source": "./plugins/yosooi",
       "description": "ターミナルのトランスクリプトを装い直す mod。発言の見出し・ツール行・スピナー・ターン区切りをグラデーションのチップと罫線で描く。/yosooi で配色を切り替える。"
