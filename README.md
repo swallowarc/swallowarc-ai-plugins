@@ -15,6 +15,7 @@ Claude Code の[プラグインマーケットプレイス](https://code.claude.
 | `bash-meter` | Bash の実行時間と失敗をトランスクリプトに表示する mod | [plugins/bash-meter](plugins/bash-meter/README.md) |
 | `yosooi` | ターミナルのトランスクリプトをグラデーションのチップと罫線で装い直す mod | [plugins/yosooi](plugins/yosooi/README.md) |
 | `statusline` | ステータスライン用スクリプトとその導入スキル。コンテキスト使用率、費用、レート制限を表示する | [plugins/statusline](plugins/statusline/README.md) |
+| `teire` | リポジトリの手入れのスキル集。default ブランチ以外のローカルブランチと worktree を一括削除する | [plugins/teire](plugins/teire/README.md) |
 
 ## インストール
 
@@ -35,6 +36,7 @@ Claude Code の[プラグインマーケットプレイス](https://code.claude.
 /plugin install bash-meter@swallowarc-ai-plugins
 /plugin install yosooi@swallowarc-ai-plugins
 /plugin install statusline@swallowarc-ai-plugins
+/plugin install teire@swallowarc-ai-plugins
 ```
 
 インストール後、収録スキルは `/<プラグイン名>:<スキル名>` で呼び出せる（例：`/kata:design`、`/shoroku:book-summary-html`）。

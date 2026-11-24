@@ -35,6 +35,11 @@
       "name": "statusline",
       "source": "./plugins/statusline",
       "description": "ステータスライン用スクリプトとその導入スキル。ディレクトリ、git ブランチ、モデル、コンテキスト使用率、費用、レート制限を 1 行に表示する。/statusline:install で導入する。"
+    },
+    {
+      "name": "teire",
+      "source": "./plugins/teire",
+      "description": "リポジトリの手入れ（保守）のスキル集。/teire:<skill-name> で呼び出す。収録：prune（default ブランチ以外のローカルブランチと worktree を、一覧提示と確認のうえ一括削除。ローカルブランチは更新しない）。"
     }
   ],
   "renames": {

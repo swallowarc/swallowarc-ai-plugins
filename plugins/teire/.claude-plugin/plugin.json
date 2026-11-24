@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "name": "teire",
+  "displayName": "teire - Repository Housekeeping",
+  "version": "0.1.0",
+  "description": "リポジトリの手入れ（保守）のスキル集。default ブランチ以外のローカルブランチと worktree を一括で削除する prune を /teire:<skill-name> で提供する。",
+  "author": {
+    "name": "mjkt"
+  },
+  "keywords": [
+    "git",
+    "branch",
+    "worktree",
+    "cleanup"
+  ],
+  "license": "MIT"
+}
