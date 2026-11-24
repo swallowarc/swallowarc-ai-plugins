@@ -13,12 +13,12 @@
 
 ## 収録スキル
 
-### prune
+### branch-prune
 
 default ブランチ以外のローカルブランチと linked worktree を一括で削除する。
 
 ```
-/teire:prune
+/teire:branch-prune
 ```
 
 削除対象を一覧で示し、確認を取ってから削除する。
@@ -37,13 +37,13 @@ fetch・pull・checkout を行わないので、default ブランチも手元の
 - locked の worktree とそのブランチ
 
 スキルは `model: haiku` で動く。
-削除対象の判定は同梱の `prune.sh` が行い、モデルは結果の提示と確認だけを担う。
+削除対象の判定は同梱の `branch-prune.sh` が行い、モデルは結果の提示と確認だけを担う。
 
 スクリプトは単体でも使える。
 
 ```
-bash skills/prune/prune.sh plan            # 対象の表示と plan id の発行（変更なし）
-bash skills/prune/prune.sh apply <plan id> # plan id が一致するときだけ削除
+bash skills/branch-prune/branch-prune.sh plan            # 対象の表示と plan id の発行（変更なし）
+bash skills/branch-prune/branch-prune.sh apply <plan id> # plan id が一致するときだけ削除
 ```
 
 ### docker-prune
@@ -77,4 +77,4 @@ bash skills/docker-prune/docker-prune.sh apply <plan id> # plan id が一致す�
 ## 前提
 
 - `bash` を使う。
-- prune は `git`、docker-prune は `docker` を使う。
+- branch-prune は `git`、docker-prune は `docker` を使う。

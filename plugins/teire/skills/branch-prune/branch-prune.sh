@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # default ブランチ以外のローカルブランチと linked worktree を削除する。
 #
-#   prune.sh plan           削除対象を表示し、最後に plan id を出す（何も変更しない）
-#   prune.sh apply <id>     plan id が現在の対象と一致するときだけ削除する
+#   branch-prune.sh plan           削除対象を表示し、最後に plan id を出す（何も変更しない）
+#   branch-prune.sh apply <id>     plan id が現在の対象と一致するときだけ削除する
 #
 # ローカルブランチの内容は一切更新しない（fetch / pull / merge / checkout を行わない）。
 # 未 push コミットの判定は、手元にある remote-tracking ref を基準にする。
@@ -148,5 +148,5 @@ case "$mode" in
     done
     exit $fail
     ;;
-  *) die "usage: prune.sh plan | prune.sh apply <plan-id>" ;;
+  *) die "usage: branch-prune.sh plan | branch-prune.sh apply <plan-id>" ;;
 esac

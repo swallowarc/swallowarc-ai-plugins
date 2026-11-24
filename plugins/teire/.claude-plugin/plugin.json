@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin.json",
   "name": "teire",
   "displayName": "teire - Dev Environment Housekeeping",
-  "version": "0.2.0",
-  "description": "ローカル開発環境の手入れ（保守）のスキル集。default ブランチ以外のローカルブランチと worktree を一括で削除する prune と、停止中の Docker コンテナと未使用イメージを一括で削除する docker-prune を /teire:<skill-name> で提供する。",
+  "version": "0.3.0",
+  "description": "ローカル開発環境の手入れ（保守）のスキル集。default ブランチ以外のローカルブランチと worktree を一括で削除する branch-prune と、停止中の Docker コンテナと未使用イメージを一括で削除する docker-prune を /teire:<skill-name> で提供する。",
   "author": {
     "name": "mjkt"
   },
