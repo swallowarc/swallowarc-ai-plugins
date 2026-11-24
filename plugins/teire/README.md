@@ -1,6 +1,6 @@
 # teire
 
-リポジトリの手入れ（保守）のスキル集。
+ローカル開発環境の手入れ（保守）のスキル集。
 
 ## インストール
 
@@ -46,6 +46,35 @@ bash skills/prune/prune.sh plan            # 対象の表示と plan id の発�
 bash skills/prune/prune.sh apply <plan id> # plan id が一致するときだけ削除
 ```
 
+### docker-prune
+
+停止中の Docker コンテナと、稼働中のコンテナが使っていない Docker イメージを一括で削除する。
+
+```
+/teire:docker-prune
+```
+
+削除対象を一覧で示し、確認を取ってから削除する。
+停止中のコンテナ（created／exited／dead）はすべて消え、それらだけが使っていたイメージも未使用として消える。
+コンテナ内に書き込まれたデータは戻せず、消したイメージは再 pull か再ビルドが必要になる。
+対象の Docker デーモンは現在の context で決まるため、一覧の先頭に context 名と接続先を出す。
+
+削除は一覧に出した ID を `docker rm`／`docker rmi` で 1 件ずつ行い、`-f` は付けない。
+一覧のあとに起動したコンテナやそのイメージは、Docker 側が削除を拒否して `FAILED` になる。
+
+次のものは削除しない。
+
+- 稼働中・一時停止中・再起動中のコンテナと、それらが使っているイメージ
+- ボリューム（停止中コンテナの匿名ボリュームも残る）、ネットワーク、ビルドキャッシュ
+
+スキルは `model: haiku` で動く。
+
+```
+bash skills/docker-prune/docker-prune.sh plan            # 対象の表示と plan id の発行（変更なし）
+bash skills/docker-prune/docker-prune.sh apply <plan id> # plan id が一致するときだけ削除
+```
+
 ## 前提
 
-- `bash` と `git` を使う。
+- `bash` を使う。
+- prune は `git`、docker-prune は `docker` を使う。
